@@ -27,8 +27,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: AppColor.primary,
       ),
-      // home: const RootApp(),
-      home: PackagesListScreen(),
+      home: const RootApp(),
+      //home: PackagesListScreen(),
     );
   }
 }
