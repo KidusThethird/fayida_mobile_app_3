@@ -8,7 +8,7 @@ import 'dart:convert';
 import '../models/packagelist.dart';
 
 import 'package:online_course/widgets/category_box.dart';
-import 'package:online_course/widgets/feature_item.dart';
+//import 'package:online_course/widgets/feature_item.dart';
 import 'package:online_course/widgets/notification_box.dart';
 import 'package:online_course/widgets/recommend_item.dart';
 

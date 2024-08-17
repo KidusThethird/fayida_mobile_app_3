@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:online_course/screens/package_details.dart';
 import 'package:online_course/theme/color.dart';
 
 import '../models/packagelist.dart';
@@ -22,7 +23,15 @@ class PackageItem extends StatelessWidget {
   Widget build(BuildContext context) {
     // return Text(data.packageName!);
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => PackageDetailsScreen(
+                    packageId: data.id!,
+                    packageImage: data.imgUrl![0],
+                    packageName: data.packageName!)));
+      },
       child: Container(
         width: width,
         height: height,
@@ -42,11 +51,14 @@ class PackageItem extends StatelessWidget {
         ),
         child: Stack(
           children: [
-            CustomImage(
-              data.imgUrl![0],
-              width: double.infinity,
-              height: 190,
-              radius: 15,
+            Hero(
+              tag: data.id!,
+              child: CustomImage(
+                data.imgUrl![0],
+                width: double.infinity,
+                height: 190,
+                radius: 15,
+              ),
             ),
             Positioned(
               top: 170,
