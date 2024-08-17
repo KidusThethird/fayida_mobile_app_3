@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:getwidget/getwidget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PackageDetailsScreen extends StatefulWidget {
   final String packageId;
@@ -22,11 +23,13 @@ class PackageDetailsScreen extends StatefulWidget {
 class _PackageDetailsScreenState extends State<PackageDetailsScreen>
     with TickerProviderStateMixin {
   late TabController tabController;
+  late String packageDetailsUrl;
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 3, vsync: this);
+    packageDetailsUrl = 'fayidaacademy.com/package_2/${widget.packageId}';
   }
 
   @override
@@ -52,68 +55,96 @@ class _PackageDetailsScreenState extends State<PackageDetailsScreen>
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: fetchPackageDetails(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Error: ${snapshot.error}',
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontSize: 16,
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              expandedHeight: screenHeight / 2.2,
+              pinned: true,
+              backgroundColor: const Color.fromARGB(255, 189, 199, 189),
+              flexibleSpace: FlexibleSpaceBar(
+                background: Hero(
+                  tag: widget.packageName,
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      bottomRight: Radius.circular(50),
+                      bottomLeft: Radius.circular(50),
+                    ),
+                    child: SizedBox(
+                      width: screenWidth,
+                      child: Image.network(
+                        widget.packageImage,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            );
-          } else if (snapshot.hasData) {
-            var data = snapshot.data!;
-            return NestedScrollView(
-              headerSliverBuilder: (context, innerBoxIsScrolled) {
-                return [
-                  SliverAppBar(
-                    expandedHeight: screenHeight / 2.2,
-                    pinned: true,
-                    backgroundColor: const Color.fromARGB(255, 189, 199, 189),
-                    flexibleSpace: FlexibleSpaceBar(
-                      background: Hero(
-                        tag: widget.packageName,
-                        child: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            bottomRight: Radius.circular(50),
-                            bottomLeft: Radius.circular(50),
-                          ),
-                          child: SizedBox(
-                            width: screenWidth,
-                            child: Image.network(
-                              widget.packageImage,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
+            ),
+            SliverPadding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth / 20, vertical: 20),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.packageName,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                        fontSize: 30,
                       ),
                     ),
-                  ),
-                  SliverPadding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: screenWidth / 20, vertical: 20),
-                    sliver: SliverToBoxAdapter(
-                      child: Text(
-                        widget.packageName,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                          fontSize: 30,
-                        ),
-                      ),
+                    GFButton(
+                      onPressed: () async {
+                        // var url = Uri.https('fayidaacademy.com',
+                        //     '/package_2/26fd7472-1ef0-4072-b0fb-7550efea7e0a');
+                        var url = Uri.https('fayidaacademy.com',
+                            '/package_2/${widget.packageId}');
+                        print("Can handle the req 000");
+
+                        if (await canLaunchUrl(url)) {
+                          print("Can handle the req");
+                          await launchUrl(url,
+                              mode: LaunchMode.externalApplication);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(
+                                    'Could not launch $packageDetailsUrl')),
+                          );
+                        }
+                      },
+                      text: "More",
+                      shape: GFButtonShape.pills,
                     ),
+                  ],
+                ),
+              ),
+            ),
+          ];
+        },
+        body: FutureBuilder<Map<String, dynamic>>(
+          future: fetchPackageDetails(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  'Error: ${snapshot.error}',
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 16,
                   ),
-                ];
-              },
-              body: Column(
+                ),
+              );
+            } else if (snapshot.hasData) {
+              var data = snapshot.data!;
+              return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   GFTabBar(
@@ -237,20 +268,20 @@ class _PackageDetailsScreenState extends State<PackageDetailsScreen>
                     ),
                   ),
                 ],
-              ),
-            );
-          } else {
-            return const Center(
-              child: Text(
-                'No description found',
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 16,
+              );
+            } else {
+              return const Center(
+                child: Text(
+                  'No description found',
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 16,
+                  ),
                 ),
-              ),
-            );
-          }
-        },
+              );
+            }
+          },
+        ),
       ),
     );
   }

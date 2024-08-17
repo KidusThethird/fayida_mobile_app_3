@@ -117,7 +117,7 @@ class PackageItem extends StatelessWidget {
         ],
       ),
       child: Text(
-        data.price!,
+        data.price! + " birr",
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.w500,
