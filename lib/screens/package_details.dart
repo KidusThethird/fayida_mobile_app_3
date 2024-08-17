@@ -52,209 +52,205 @@ class _PackageDetailsScreenState extends State<PackageDetailsScreen>
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Hero(
-              tag: widget.packageName,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  bottomRight: Radius.circular(50),
-                  bottomLeft: Radius.circular(50),
-                ),
-                child: SizedBox(
-                  height: screenHeight / 2.2,
-                  width: screenWidth,
-                  child: Image.network(
-                    widget.packageImage,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: screenWidth / 20, vertical: 20),
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: fetchPackageDetails(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
               child: Text(
-                widget.packageName,
+                'Error: ${snapshot.error}',
                 style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                  fontSize: 30,
+                  color: Colors.red,
+                  fontSize: 16,
                 ),
               ),
-            ),
-            FutureBuilder<Map<String, dynamic>>(
-              future: fetchPackageDetails(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: screenWidth / 20),
-                    child: const Text(
-                      'Loading description...',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
+            );
+          } else if (snapshot.hasData) {
+            var data = snapshot.data!;
+            return NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) {
+                return [
+                  SliverAppBar(
+                    expandedHeight: screenHeight / 2.2,
+                    pinned: true,
+                    backgroundColor: const Color.fromARGB(255, 189, 199, 189),
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Hero(
+                        tag: widget.packageName,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            bottomRight: Radius.circular(50),
+                            bottomLeft: Radius.circular(50),
+                          ),
+                          child: SizedBox(
+                            width: screenWidth,
+                            child: Image.network(
+                              widget.packageImage,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  );
-                } else if (snapshot.hasError) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: screenWidth / 20),
-                    child: Text(
-                      'Error: ${snapshot.error}',
-                      style: const TextStyle(
-                        color: Colors.red,
-                        fontSize: 16,
+                  ),
+                  SliverPadding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth / 20, vertical: 20),
+                    sliver: SliverToBoxAdapter(
+                      child: Text(
+                        widget.packageName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                          fontSize: 30,
+                        ),
                       ),
                     ),
-                  );
-                } else if (snapshot.hasData) {
-                  var data = snapshot.data!;
-                  return Column(
-                    children: [
-                      GFTabBar(
-                        length: 3,
-                        controller: tabController,
-                        tabBarColor: Color.fromARGB(47, 9, 95, 12),
-                        labelColor: Colors.black,
-                        tabs: [
-                          Tab(
-                            icon: Icon(Icons.info),
-                            child: Text(
-                              "Info",
-                            ),
-                          ),
-                          Tab(
-                            icon: Icon(Icons.book),
-                            child: Text(
-                              "Content",
-                            ),
-                          ),
-                          Tab(
-                            icon: Icon(Icons.comment),
-                            child: Text(
-                              "Reviews",
-                            ),
-                          ),
-                        ],
-                      ),
-                      GFTabBarView(
-                        controller: tabController,
-                        children: <Widget>[
-                          Container(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: screenWidth / 20, vertical: 15),
-                              child: Text(
-                                '${data['packageDescription']}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(221, 10, 77, 13),
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: List.generate(data['courses'].length,
-                                    (index) {
-                                  return Container(
-                                    margin: EdgeInsets.all(8.0),
-                                    color: Color.fromARGB(122, 8, 68, 21),
-                                    child: Center(
-                                      child: GFAccordion(
-                                        title:
-                                            '${data['courses'][index]['courseName']}',
-                                        content:
-                                            '${data['courses'][index]['courseDescription']}',
-                                        collapsedIcon: Icon(Icons.add),
-                                        expandedIcon: Icon(Icons.minimize),
-                                      ),
-                                    ),
-                                  );
-                                }),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                children: List.generate(data['review'].length,
-                                    (index) {
-                                  return Container(
-                                    margin: EdgeInsets.all(8.0),
-                                    color: Color.fromARGB(122, 8, 68, 21),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Container(
-                                        width: double.infinity,
-                                        margin: EdgeInsets.all(8.0),
-                                        padding: EdgeInsets.all(16.0),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black12,
-                                              blurRadius: 5.0,
-                                              spreadRadius: 2.0,
-                                            ),
-                                          ],
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "${data['review'][index]['text']}",
-                                              style: TextStyle(
-                                                fontSize: 16.0,
-                                                fontWeight: FontWeight.normal,
-                                              ),
-                                            ),
-                                            SizedBox(height: 8.0),
-                                            Text(
-                                              "${data['review'][index]['Student']['firstName']} ${data['review'][index]['Student']['lastName']}",
-                                              style: TextStyle(
-                                                fontSize: 14.0,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.grey[600],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  );
-                } else {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: screenWidth / 20),
-                    child: const Text(
-                      'No description found',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 16,
-                      ),
-                    ),
-                  );
-                }
+                  ),
+                ];
               },
-            ),
-          ],
-        ),
+              body: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GFTabBar(
+                    length: 3,
+                    controller: tabController,
+                    tabBarColor: Color.fromARGB(47, 9, 95, 12),
+                    labelColor: Colors.black,
+                    tabs: [
+                      Tab(
+                        icon: Icon(Icons.info),
+                        child: Text(
+                          "Info",
+                        ),
+                      ),
+                      Tab(
+                        icon: Icon(Icons.book),
+                        child: Text(
+                          "Content",
+                        ),
+                      ),
+                      Tab(
+                        icon: Icon(Icons.comment),
+                        child: Text(
+                          "Reviews",
+                        ),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: GFTabBarView(
+                      controller: tabController,
+                      children: <Widget>[
+                        SingleChildScrollView(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: screenWidth / 20, vertical: 15),
+                            child: Text(
+                              '${data['packageDescription']}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(221, 10, 77, 13),
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SingleChildScrollView(
+                          child: Column(
+                            children:
+                                List.generate(data['courses'].length, (index) {
+                              return Container(
+                                margin: EdgeInsets.all(8.0),
+                                color: Color.fromARGB(122, 8, 68, 21),
+                                child: Center(
+                                  child: GFAccordion(
+                                    title:
+                                        '${data['courses'][index]['courseName']}',
+                                    content:
+                                        '${data['courses'][index]['courseDescription']}',
+                                    collapsedIcon: Icon(Icons.add),
+                                    expandedIcon: Icon(Icons.minimize),
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
+                        SingleChildScrollView(
+                          child: Column(
+                            children:
+                                List.generate(data['review'].length, (index) {
+                              return Container(
+                                margin: EdgeInsets.all(8.0),
+                                color: Color.fromARGB(122, 8, 68, 21),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Container(
+                                    width: double.infinity,
+                                    margin: EdgeInsets.all(8.0),
+                                    padding: EdgeInsets.all(16.0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black12,
+                                          blurRadius: 5.0,
+                                          spreadRadius: 2.0,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "${data['review'][index]['text']}",
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.normal,
+                                          ),
+                                        ),
+                                        SizedBox(height: 8.0),
+                                        Text(
+                                          "${data['review'][index]['Student']['firstName']} ${data['review'][index]['Student']['lastName']}",
+                                          style: TextStyle(
+                                            fontSize: 14.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return const Center(
+              child: Text(
+                'No description found',
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 16,
+                ),
+              ),
+            );
+          }
+        },
       ),
     );
   }
