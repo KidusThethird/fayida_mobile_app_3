@@ -12,6 +12,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final Dio _dio = Dio();
   String? _firstName;
+  var myData;
 
   @override
   void initState() {
@@ -36,6 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'https://api.fayidaacademy.com/login_register/profile'); // Update with your endpoint
       if (response.statusCode == 200) {
         setState(() {
+          myData = response.data;
           _firstName = response.data[
               'firstName']; // Adjust according to your API response structure
         });

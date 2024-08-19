@@ -4,6 +4,11 @@ import 'package:online_course/utils/data.dart';
 import 'package:online_course/widgets/custom_image.dart';
 import 'package:online_course/widgets/setting_box.dart';
 import 'package:online_course/widgets/setting_item.dart';
+import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../services/persistent_cookie_jar.dart';
+import 'login.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({Key? key}) : super(key: key);
@@ -13,8 +18,70 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
+  String? firstName;
+  String? lastName;
+  String? grade;
+  String? phoneNumber;
+  String? age;
+  String? status;
+  String? email;
+  String? points;
+  String? grandName;
+  String? city;
+  String? region;
+  String? school;
+  String? gender;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? cookieString = prefs.getString('cookies');
+
+    if (cookieString != null) {
+      final Dio dio = Dio();
+      dio.options.headers['Cookie'] = cookieString;
+
+      try {
+        final response = await dio
+            .get('https://api.fayidaacademy.com/login_register/profile');
+
+        if (response.statusCode == 200) {
+          setState(() {
+            firstName = response.data['firstName'];
+            lastName = response.data['lastName'];
+            grade = response.data['gread'];
+            phoneNumber = response.data['phoneNumber'];
+            age = response.data['age'];
+            status = response.data['studentStatus'];
+            email = response.data['email'];
+            points = response.data['points'];
+            grandName = response.data['grandName'];
+            city = response.data['city'];
+            region = response.data['region'];
+            school = response.data['schoolName'];
+            gender = response.data['gender'];
+          });
+        }
+      } catch (e) {
+        // Handle error if needed
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (firstName == null && lastName == null) {
+      // Show loading screen while data is being fetched
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return CustomScrollView(
       slivers: <Widget>[
         SliverAppBar(
@@ -29,7 +96,7 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  _buildHeader() {
+  Widget _buildHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -51,21 +118,13 @@ class _AccountPageState extends State<AccountPage> {
       child: Column(
         children: [
           _buildProfile(),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
           _buildRecord(),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
           _buildSection1(),
-          const SizedBox(
-            height: 20,
-          ),
-          _buildSection2(),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
+          // _buildSection2(),
+          // const SizedBox(height: 20),
           _buildSection3(),
         ],
       ),
@@ -75,17 +134,15 @@ class _AccountPageState extends State<AccountPage> {
   Widget _buildProfile() {
     return Column(
       children: [
-        CustomImage(
-          profile["image"]!,
-          width: 70,
-          height: 70,
-          radius: 20,
+        Icon(
+          Icons.person,
+          size: 70,
+          color: Color.fromARGB(
+              255, 11, 82, 17), // Use your desired color for the icon
         ),
-        const SizedBox(
-          height: 10,
-        ),
+        const SizedBox(height: 10),
         Text(
-          profile["name"]!,
+          '$firstName $lastName',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
@@ -101,25 +158,21 @@ class _AccountPageState extends State<AccountPage> {
       children: [
         Expanded(
           child: SettingBox(
-            title: "12 courses",
-            icon: "assets/icons/work.svg",
+            title: 'Status: $status',
+            icon: "assets/icons/profile.svg",
           ),
         ),
-        const SizedBox(
-          width: 10,
-        ),
+        const SizedBox(width: 10),
         Expanded(
           child: SettingBox(
-            title: "55 hours",
-            icon: "assets/icons/time.svg",
+            title: "$grade",
+            icon: "assets/icons/more.svg",
           ),
         ),
-        const SizedBox(
-          width: 10,
-        ),
+        const SizedBox(width: 10),
         Expanded(
           child: SettingBox(
-            title: "4.8",
+            title: 'Points: $points',
             icon: "assets/icons/star.svg",
           ),
         ),
@@ -138,79 +191,51 @@ class _AccountPageState extends State<AccountPage> {
             color: AppColor.shadowColor.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 1,
-            offset: Offset(0, 1), // changes position of shadow
+            offset: Offset(0, 1),
           ),
         ],
       ),
       child: Column(
         children: [
-          SettingItem(
-            title: "Setting",
-            leadingIcon: "assets/icons/setting.svg",
-            bgIconColor: AppColor.blue,
+          itemProfile(
+            'Full Name',
+            '$firstName $lastName $grandName',
+            Icons.person,
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 45),
-            child: Divider(
-              height: 0,
-              color: Colors.grey.withOpacity(0.8),
-            ),
+          itemProfile(
+            'Email',
+            '$email',
+            Icons.email,
           ),
-          SettingItem(
-            title: "Payment",
-            leadingIcon: "assets/icons/wallet.svg",
-            bgIconColor: AppColor.green,
+          itemProfile(
+            'School',
+            '$school',
+            Icons.school,
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 45),
-            child: Divider(
-              height: 0,
-              color: Colors.grey.withOpacity(0.8),
-            ),
+          itemProfile(
+            'City',
+            '$city',
+            Icons.location_history,
           ),
-          SettingItem(
-            title: "Bookmark",
-            leadingIcon: "assets/icons/bookmark.svg",
-            bgIconColor: AppColor.primary,
+          itemProfile(
+            'Region',
+            '$region',
+            Icons.location_city,
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSection2() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        color: AppColor.cardColor,
-        boxShadow: [
-          BoxShadow(
-            color: AppColor.shadowColor.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 1,
-            offset: Offset(0, 1), // changes position of shadow
+          itemProfile(
+            'Age',
+            '$age',
+            Icons.calendar_view_day,
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          SettingItem(
-            title: "Notification",
-            leadingIcon: "assets/icons/bell.svg",
-            bgIconColor: AppColor.purple,
+          itemProfile(
+            'Gender',
+            '$gender',
+            Icons.male,
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 45),
-            child: Divider(
-              height: 0,
-              color: Colors.grey.withOpacity(0.8),
-            ),
-          ),
-          SettingItem(
-            title: "Privacy",
-            leadingIcon: "assets/icons/shield.svg",
-            bgIconColor: AppColor.orange,
+          itemProfile(
+            'Phone Number',
+            '$phoneNumber',
+            Icons.phone,
           ),
         ],
       ),
@@ -219,6 +244,7 @@ class _AccountPageState extends State<AccountPage> {
 
   Widget _buildSection3() {
     return Container(
+      margin: EdgeInsets.all(8.0),
       padding: const EdgeInsets.symmetric(horizontal: 15),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
@@ -228,15 +254,57 @@ class _AccountPageState extends State<AccountPage> {
             color: AppColor.shadowColor.withOpacity(0.1),
             spreadRadius: 1,
             blurRadius: 1,
-            offset: Offset(0, 1), // changes position of shadow
+            offset: Offset(0, 1),
           ),
         ],
       ),
-      child: SettingItem(
-        title: "Log Out",
-        leadingIcon: "assets/icons/logout.svg",
-        bgIconColor: AppColor.darker,
+      child: GestureDetector(
+        onTap: () {
+          _logout();
+        },
+        child: SettingItem(
+          title: "Log Out",
+          leadingIcon: "assets/icons/logout.svg",
+          bgIconColor: AppColor.darker,
+        ),
       ),
+    );
+  }
+
+  itemProfile(String title, String subtitle, IconData iconData) {
+    return Container(
+      margin: EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+                offset: Offset(0, 5),
+                color: Color.fromARGB(255, 14, 82, 12).withOpacity(.2),
+                spreadRadius: 2,
+                blurRadius: 10)
+          ]),
+      child: ListTile(
+        title: Text(title),
+        subtitle: Text(subtitle),
+        leading: Icon(iconData),
+        trailing: Icon(Icons.arrow_forward, color: Colors.grey.shade400),
+        tileColor: Colors.white,
+      ),
+    );
+  }
+
+  void _logout() async {
+    // Create an instance of PersistentCookieJar
+    final cookieJar = PersistentCookieJar();
+
+    // Delete all cookies to clear the session
+    await cookieJar.deleteAll();
+
+    // Navigate to LoginScreen
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+      (route) => false, // Remove all previous routes
     );
   }
 }

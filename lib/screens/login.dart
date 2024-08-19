@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:online_course/screens/root_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_course/screens/profiletest.dart';
 
@@ -66,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
 
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => ProfileScreen()),
+          MaterialPageRoute(builder: (context) => RootApp()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
