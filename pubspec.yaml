@@ -22,6 +22,13 @@ dependencies:
   http: ^0.13.5
   getwidget: ^2.0.4
   url_launcher: ^6.1.7
+  # dio: ^5.0.0
+  # dio_cookie_manager: ^2.0.0
+  # cookie_jar: ^4.0.0
+  dio:
+  dio_cookie_manager:
+  cookie_jar:
+  shared_preferences: ^2.0.6
   #url_launcher:
 dev_dependencies:
   flutter_test:

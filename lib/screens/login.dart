@@ -1,7 +1,84 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:online_course/screens/profiletest.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
+
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final Dio _dio = Dio();
+  final CookieJar _cookieJar = CookieJar();
+
+  @override
+  void initState() {
+    super.initState();
+    _dio.interceptors.add(CookieManager(_cookieJar));
+  }
+
+  Future<void> _login() async {
+    final String email = _emailController.text.trim();
+    final String password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter both email and password')),
+      );
+      return;
+    }
+
+    try {
+      final response = await _dio.post(
+        'https://api.fayidaacademy.com/login_register/loginss',
+        data: {'email': email, 'password': password},
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+          followRedirects: false,
+          validateStatus: (status) {
+            return status! < 500;
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        // Save email in Shared Preferences
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('email', email);
+
+        // Save cookies to Shared Preferences
+        final cookies = await _cookieJar
+            .loadForRequest(Uri.parse('https://api.fayidaacademy.com'));
+        final cookieString = cookies
+            .map((cookie) => '${cookie.name}=${cookie.value}')
+            .join('; ');
+        await prefs.setString('cookies', cookieString);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login successful')),
+        );
+
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => ProfileScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed: ${response.data['message']}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,25 +98,17 @@ class LoginScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(
-              height: 80,
-            ),
+            SizedBox(height: 80),
             Padding(
               padding: EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    "Login",
-                    style: TextStyle(color: Colors.white, fontSize: 40),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    "Welcome Back",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
+                  Text("Login",
+                      style: TextStyle(color: Colors.white, fontSize: 40)),
+                  SizedBox(height: 10),
+                  Text("Welcome Back",
+                      style: TextStyle(color: Colors.white, fontSize: 18)),
                 ],
               ),
             ),
@@ -57,9 +126,7 @@ class LoginScreen extends StatelessWidget {
                   padding: EdgeInsets.all(30),
                   child: Column(
                     children: <Widget>[
-                      SizedBox(
-                        height: 60,
-                      ),
+                      SizedBox(height: 60),
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -78,12 +145,12 @@ class LoginScreen extends StatelessWidget {
                               padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 border: Border(
-                                  bottom: BorderSide(
-                                    color: Colors.grey.shade200,
-                                  ),
+                                  bottom:
+                                      BorderSide(color: Colors.grey.shade200),
                                 ),
                               ),
                               child: TextField(
+                                controller: _emailController,
                                 decoration: InputDecoration(
                                   hintText: "Email or Phone number",
                                   hintStyle: TextStyle(color: Colors.grey),
@@ -95,12 +162,12 @@ class LoginScreen extends StatelessWidget {
                               padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 border: Border(
-                                  bottom: BorderSide(
-                                    color: Colors.grey.shade200,
-                                  ),
+                                  bottom:
+                                      BorderSide(color: Colors.grey.shade200),
                                 ),
                               ),
                               child: TextField(
+                                controller: _passwordController,
                                 obscureText: true,
                                 decoration: InputDecoration(
                                   hintText: "Password",
@@ -112,18 +179,9 @@ class LoginScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      SizedBox(
-                        height: 40,
-                      ),
-                      // Text(
-                      //   "Forgot Password?",
-                      //   style: TextStyle(color: Colors.grey),
-                      // ),
-                      SizedBox(
-                        height: 40,
-                      ),
+                      SizedBox(height: 40),
                       MaterialButton(
-                        onPressed: () {},
+                        onPressed: _login,
                         height: 50,
                         color: Color.fromARGB(255, 18, 155, 64),
                         shape: RoundedRectangleBorder(
@@ -133,22 +191,15 @@ class LoginScreen extends StatelessWidget {
                           child: Text(
                             "Login",
                             style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 50,
-                      ),
-                      Text(
-                        "New to Fayida?",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
+                      SizedBox(height: 50),
+                      Text("New to Fayida?",
+                          style: TextStyle(color: Colors.grey)),
+                      SizedBox(height: 30),
                       Row(
                         children: <Widget>[
                           Expanded(
@@ -162,62 +213,32 @@ class LoginScreen extends StatelessWidget {
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: Color.fromARGB(255, 14, 78, 20),
-                                    borderRadius: BorderRadius.circular(
-                                        50), // Add borderRadius here
+                                    borderRadius: BorderRadius.circular(50),
                                   ),
-                                  // color: Color.fromARGB(255, 14, 78, 20),
                                   child: Padding(
                                     padding: const EdgeInsets.all(16.0),
                                     child: Text(
                                       "Sign Up",
                                       style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                          SizedBox(
-                            width: 30,
-                          ),
-                          // Expanded(
-                          //   child: MaterialButton(
-                          //     onPressed: () {},
-                          //     height: 50,
-                          //     shape: RoundedRectangleBorder(
-                          //       borderRadius: BorderRadius.circular(50),
-                          //     ),
-                          //     color: Colors.black,
-                          //     child: Center(
-                          //       child: Text(
-                          //         "Github",
-                          //         style: TextStyle(
-                          //           color: Colors.white,
-                          //           fontWeight: FontWeight.bold,
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // )
+                          SizedBox(width: 30),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: LoginScreen(),
-  ));
 }

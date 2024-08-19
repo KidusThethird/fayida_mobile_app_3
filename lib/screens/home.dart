@@ -36,12 +36,20 @@ class _HomePageState extends State<HomePage> {
     print("response.body");
   }
 
+  Future getProfile() async {
+    var response = await http
+        .get(Uri.https('api.fayidaacademy.com', 'login_register/profile'));
+    var jsonData = jsonDecode(response.body);
+    print("response.body");
+  }
+
   @override
   void initState() {
     print("comon");
     PackageListServices().getAllPackages();
 
     super.initState();
+    getProfile();
     getPackageList(); // Call this in initState to load data when the widget is created
   }
 
