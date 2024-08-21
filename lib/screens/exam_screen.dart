@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +19,8 @@ class _ExamScreenState extends State<ExamScreen> {
   bool isLoading = true;
   String message = '';
   List<String?> selectedAnswers = [];
+  late Timer _timer;
+  int _start = 0; // Countdown in seconds
 
   @override
   void initState() {
@@ -50,8 +53,11 @@ class _ExamScreenState extends State<ExamScreen> {
                   .toList();
               questionCount = questions.length;
               selectedAnswers = List.filled(questionCount, null);
+              _start = int.parse(examInfo['duration'].toString()) *
+                  60; // Convert minutes to seconds
               isLoading = false;
             });
+            startTimer();
           }
         } else {
           setState(() {
@@ -73,7 +79,33 @@ class _ExamScreenState extends State<ExamScreen> {
     }
   }
 
-  void submitAnswers(BuildContext context) {
+  void startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_start > 0) {
+          _start--;
+        } else {
+          _timer.cancel();
+          submitAnswers(context);
+        }
+      });
+    });
+  }
+
+  Future<void> submitAnswers(BuildContext context) async {
+    // Ensure credentials are available for submission
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? cookieString = prefs.getString('cookies');
+
+    if (cookieString == null) {
+      final snackBar = SnackBar(
+        content: Text("No credentials found. Please log in again."),
+        backgroundColor: Colors.red,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
     int unansweredCount =
         selectedAnswers.where((answer) => answer == null).length;
 
@@ -82,16 +114,97 @@ class _ExamScreenState extends State<ExamScreen> {
         content: Text("$unansweredCount question(s) remaining."),
         backgroundColor: Colors.red,
       );
-
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } else {
-      // Handle submission logic here
-      print('Submitted Answers: $selectedAnswers');
+      return; // Exit if unanswered questions exist
+    }
+
+    // Prepare data for submission
+    final Map<String, dynamic> postData = {
+      'assessmentId': widget.examId,
+      'answers': selectedAnswers,
+    };
+
+    try {
+      final Dio dio = Dio();
+      dio.options.headers['Cookie'] = cookieString;
+
+      final response = await dio.post(
+        'https://api.fayidaacademy.com/assesments/submit-answers/${widget.examId}',
+        data: postData,
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = response.data;
+        // Show dialog with response message
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Submission Result'),
+              content: Text(responseData['message']),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        // Handle error response
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text('Failed to submit answers. Please try again.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('An error occurred: $e'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
   @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    int answeredCount =
+        selectedAnswers.where((answer) => answer != null).length;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Exam Details'),
@@ -113,8 +226,17 @@ class _ExamScreenState extends State<ExamScreen> {
                         ),
                         SizedBox(height: 10),
                         Text(
+                          'Time Remaining: ${_start ~/ 60}:${(_start % 60).toString().padLeft(2, '0')}',
+                          style: TextStyle(fontSize: 20, color: Colors.red),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
                           'Number of Questions: $questionCount',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        Text(
+                          'Answered Questions: $answeredCount',
+                          style: TextStyle(fontSize: 16),
                         ),
                         SizedBox(height: 20),
                         ListView.builder(
@@ -158,12 +280,8 @@ class Question {
   factory Question.fromJson(Map<String, dynamic> json) {
     return Question(
       questionText: json['question'],
-      choices: [
-        json['choiseA'],
-        json['choiseB'],
-        json['choiseC'],
-        json['choiseD'],
-      ],
+      // Store only the letters of the choices in lowercase
+      choices: ['a', 'b', 'c', 'd'],
     );
   }
 }
@@ -173,10 +291,11 @@ class QuestionWidget extends StatefulWidget {
   final int questionNumber;
   final ValueChanged<String?> onAnswerSelected;
 
-  QuestionWidget(
-      {required this.question,
-      required this.questionNumber,
-      required this.onAnswerSelected});
+  QuestionWidget({
+    required this.question,
+    required this.questionNumber,
+    required this.onAnswerSelected,
+  });
 
   @override
   _QuestionWidgetState createState() => _QuestionWidgetState();
@@ -206,23 +325,22 @@ class _QuestionWidgetState extends State<QuestionWidget> {
             ),
             SizedBox(height: 8.0),
             ...List.generate(widget.question.choices.length, (index) {
-              String choiceLetter = ['A', 'B', 'C', 'D'][index];
-              bool isSelected =
-                  selectedChoice == widget.question.choices[index];
+              String choiceLetter = widget.question.choices[index];
+              bool isSelected = selectedChoice == choiceLetter;
 
               return GestureDetector(
                 onTap: () {
                   setState(() {
-                    selectedChoice = widget.question.choices[index];
+                    selectedChoice = choiceLetter;
                     widget.onAnswerSelected(selectedChoice);
                   });
                 },
                 child: Row(
                   children: [
                     Radio<String>(
-                      value: widget.question.choices[index],
+                      value: choiceLetter,
                       groupValue: selectedChoice,
-                      activeColor: Colors.green, // Change active color to green
+                      activeColor: Colors.green,
                       onChanged: (String? value) {
                         setState(() {
                           selectedChoice = value;
@@ -231,7 +349,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                       },
                     ),
                     Text(
-                      '$choiceLetter. ${widget.question.choices[index]}',
+                      '$choiceLetter',
                       style: TextStyle(
                         color: isSelected ? Colors.green : Colors.black,
                       ),
