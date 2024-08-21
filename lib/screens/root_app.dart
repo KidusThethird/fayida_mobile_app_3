@@ -4,6 +4,7 @@ import 'package:online_course/screens/chat.dart';
 import 'package:online_course/theme/color.dart';
 import 'package:online_course/utils/constant.dart';
 import 'package:online_course/widgets/bottombar_item.dart';
+import 'courses_screen.dart';
 import 'home.dart';
 
 class RootApp extends StatefulWidget {
@@ -29,7 +30,7 @@ class _RootAppState extends State<RootApp> with TickerProviderStateMixin {
     {
       "icon": "assets/icons/play.svg",
       "active_icon": "assets/icons/play.svg",
-      "page": Container(),
+      "page": CoursesScreen(),
     },
     {
       "icon": "assets/icons/chat.svg",
