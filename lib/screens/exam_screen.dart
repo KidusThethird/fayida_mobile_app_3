@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'correction_screen.dart';
 
 class ExamScreen extends StatefulWidget {
   final String examId;
@@ -53,8 +54,9 @@ class _ExamScreenState extends State<ExamScreen> {
                   .toList();
               questionCount = questions.length;
               selectedAnswers = List.filled(questionCount, null);
-              _start = int.parse(examInfo['duration'].toString()) *
-                  60; // Convert minutes to seconds
+              // _start = int.parse(examInfo['duration'].toString()) *
+              //     60;
+              _start = 15;
               isLoading = false;
             });
             startTimer();
@@ -86,14 +88,14 @@ class _ExamScreenState extends State<ExamScreen> {
           _start--;
         } else {
           _timer.cancel();
-          submitAnswers(context);
+          submitAnswers(context, autoSubmit: true); // Automatically submit
         }
       });
     });
   }
 
-  Future<void> submitAnswers(BuildContext context) async {
-    // Ensure credentials are available for submission
+  Future<void> submitAnswers(BuildContext context,
+      {bool autoSubmit = false}) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? cookieString = prefs.getString('cookies');
 
@@ -106,19 +108,27 @@ class _ExamScreenState extends State<ExamScreen> {
       return;
     }
 
-    int unansweredCount =
-        selectedAnswers.where((answer) => answer == null).length;
-
-    if (unansweredCount > 0) {
-      final snackBar = SnackBar(
-        content: Text("$unansweredCount question(s) remaining."),
-        backgroundColor: Colors.red,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      return; // Exit if unanswered questions exist
+    // Check for unanswered questions only if not auto-submit
+    if (!autoSubmit) {
+      if (selectedAnswers.contains(null)) {
+        final snackBar = SnackBar(
+          content: Text("Please answer all questions before submitting."),
+          backgroundColor: Colors.orange,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        return;
+      }
     }
 
-    // Prepare data for submission
+    // Fill unanswered questions with 'x' for auto submit
+    if (autoSubmit) {
+      for (int i = 0; i < selectedAnswers.length; i++) {
+        if (selectedAnswers[i] == null) {
+          selectedAnswers[i] = 'x'; // Replace unanswered with 'x'
+        }
+      }
+    }
+
     final Map<String, dynamic> postData = {
       'assessmentId': widget.examId,
       'answers': selectedAnswers,
@@ -135,7 +145,6 @@ class _ExamScreenState extends State<ExamScreen> {
 
       if (response.statusCode == 200) {
         final responseData = response.data;
-        // Show dialog with response message
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -146,6 +155,14 @@ class _ExamScreenState extends State<ExamScreen> {
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(); // Close the dialog
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CorrectionScreen(
+                          examId: widget.examId,
+                        ),
+                      ),
+                    );
                   },
                   child: Text('OK'),
                 ),
@@ -154,7 +171,6 @@ class _ExamScreenState extends State<ExamScreen> {
           },
         );
       } else {
-        // Handle error response
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -280,8 +296,12 @@ class Question {
   factory Question.fromJson(Map<String, dynamic> json) {
     return Question(
       questionText: json['question'],
-      // Store only the letters of the choices in lowercase
-      choices: ['a', 'b', 'c', 'd'],
+      choices: [
+        'a',
+        'b',
+        'c',
+        'd'
+      ], // Placeholder for choices, adjust as needed
     );
   }
 }
