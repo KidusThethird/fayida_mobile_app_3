@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'exam_screen.dart'; // Make sure to import your ExamScreen here
 
 class AssessmentScreen extends StatefulWidget {
   final String assessmentId;
@@ -17,6 +18,8 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
   String duration = '';
   String message = '';
   bool isLoading = true;
+  String points = '';
+  String examId = ''; // Add examId variable
 
   @override
   void initState() {
@@ -38,12 +41,13 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
 
         if (response.statusCode == 200) {
           setState(() {
-            // Parse the nested JSON data
             var assessmentData = response.data['assementId'];
             assessmentTitle = assessmentData['assesmentTitle'] ?? 'No Title';
             assessmentDescription =
                 assessmentData['assesmentDescription'] ?? 'No Description';
             duration = assessmentData['duration'] ?? 'No Duration';
+            points = assessmentData['assesmentPoints'] ?? '';
+            examId = assessmentData['id'] ?? ''; // Get examId from API
             isLoading = false;
           });
         } else {
@@ -64,6 +68,16 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
         isLoading = false;
       });
     }
+  }
+
+  void _takeExam() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            ExamScreen(examId: examId), // Navigate to ExamScreen with examId
+      ),
+    );
   }
 
   @override
@@ -95,6 +109,22 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
                       Text(
                         'Duration: $duration minutes',
                         style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'You can collect up to $points Points in this assessment!',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Note: Once you start taking the assessment, you cannot return without submitting! If you do, your result may be taken as invalid permanently.',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 20), // Add spacing for button
+                      ElevatedButton(
+                        onPressed: _takeExam, // Call the function on pressed
+                        child: Text('Take Exam'),
                       ),
                     ],
                   ),
