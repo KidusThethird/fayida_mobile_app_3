@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:online_course/screens/video_details.dart';
-import 'package:online_course/screens/file_details.dart'; // Add this import for FileDetailScreen
+import 'package:online_course/screens/file_details.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'link_details.dart';
 
 class CourseMaterialsScreen extends StatefulWidget {
   final String id;
@@ -214,9 +216,20 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => FileDetailScreen(
-                                            fileId:
-                                                fileId), // Navigate to FileDetailScreen
+                                        builder: (context) =>
+                                            FileDetailScreen(fileId: fileId),
+                                      ),
+                                    );
+                                  } else if (material['materialType'] ==
+                                      'link') {
+                                    String linkId = material?['id'] ??
+                                        ''; // Get the link ID
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => LinkScreen(
+                                            materialId:
+                                                linkId), // Navigate to LinkScreen
                                       ),
                                     );
                                   }
