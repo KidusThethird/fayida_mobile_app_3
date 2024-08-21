@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../theme/color.dart';
 import '../widgets/custom_image.dart';
+import 'course_materials.dart';
 
 class CoursesScreen extends StatefulWidget {
   @override
@@ -120,7 +121,7 @@ class _CoursesScreenState extends State<CoursesScreen>
               double calculateProgressValue(
                   int completedMaterials, int totalMaterials) {
                 return totalMaterials > 0
-                    ? ((completedMaterials-1) * 100) / totalMaterials
+                    ? ((completedMaterials - 1) * 100) / totalMaterials
                     : 0;
               }
 
@@ -149,100 +150,114 @@ class _CoursesScreenState extends State<CoursesScreen>
               //         }).length /
               //         mainData[index].Courses!.materials.length)
               //     : 0);
-
-              return Container(
-                margin: EdgeInsets.only(right: 10),
-                padding: EdgeInsets.all(10),
-                width: 300,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 1,
-                      offset: Offset(1, 1), // changes position of shadow
+              Map<String, dynamic> courseData =
+                  mainData[index]['Courses'] ?? {};
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CourseMaterialsScreen(
+                        id: mainData[index]['coursesId'],
+                        // courseData: courseData
+                      ), // Corrected line
                     ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    CustomImage(
-                      mainData[index]['packageImgUrl'][0],
-                      radius: 15,
-                      height: 80,
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          mainData[index]['Courses']['courseName'].length > 15
-                              ? mainData[index]['Courses']['courseName']
-                                      .substring(0, 15) +
-                                  '...'
-                              : mainData[index]['Courses']['courseName'],
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: AppColor.textColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                  );
+                },
+                child: Container(
+                  margin: EdgeInsets.only(right: 10),
+                  padding: EdgeInsets.all(10),
+                  width: 300,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 1,
+                        offset: Offset(1, 1), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      CustomImage(
+                        mainData[index]['packageImgUrl'][0],
+                        radius: 15,
+                        height: 80,
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            mainData[index]['Courses']['courseName'].length > 15
+                                ? mainData[index]['Courses']['courseName']
+                                        .substring(0, 15) +
+                                    '...'
+                                : mainData[index]['Courses']['courseName'],
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: AppColor.textColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
+                          const SizedBox(
+                            height: 5,
+                          ),
 
-                        Text(progressValue.toString() + " %"),
-                        // Text(mainData[index]['Courses']['materials']
-                        //             .isNotEmpty ==
-                        //         true
-                        //     ? (mainData[index]['Courses']['materials']
-                        //             .where((material) {
-                        //           return material['StudentMaterial'].any(
-                        //               (item) =>
-                        //                   item['StudentId'] ==
-                        //                       mainData[index]['studentsId'] &&
-                        //                   item['Done'] == true);
-                        //         }).length /
-                        //         mainData[index]['Courses']['materials'].length)
-                        //     : "0"),
+                          Text(progressValue.toString() + " %"),
+                          // Text(mainData[index]['Courses']['materials']
+                          //             .isNotEmpty ==
+                          //         true
+                          //     ? (mainData[index]['Courses']['materials']
+                          //             .where((material) {
+                          //           return material['StudentMaterial'].any(
+                          //               (item) =>
+                          //                   item['StudentId'] ==
+                          //                       mainData[index]['studentsId'] &&
+                          //                   item['Done'] == true);
+                          //         }).length /
+                          //         mainData[index]['Courses']['materials'].length)
+                          //     : "0"),
 
-                        // LinearProgressIndicator(
-                        //   value: 50,
-                        // ),
-                        // GFProgressBar(
-                        //     percentage: 50,
-                        // percentage: (mainData[index]
-                        //             .Courses
-                        //             ?.materials
-                        //             ?.isNotEmpty ==
-                        //         true
-                        //     ? (mainData[index]
-                        //             .Courses!
-                        //             .materials
-                        //             .where((material) {
-                        //           return material.StudentMaterial.any(
-                        //               (item) =>
-                        //                   item.StudentId ==
-                        //                       mainData[index].studentsId &&
-                        //                   item.Done == true);
-                        //         }).length /
-                        //         mainData[index].Courses!.materials.length)
-                        //     : 0),
-                        // backgroundColor: Colors.black26,
-                        // progressBarColor: GFColors.DANGER),
-                        const SizedBox(
-                          height: 15,
-                        ),
-//_buildDurationAndRate()
-                      ],
-                    ),
-                  ],
+                          // LinearProgressIndicator(
+                          //   value: 50,
+                          // ),
+                          // GFProgressBar(
+                          //     percentage: 50,
+                          // percentage: (mainData[index]
+                          //             .Courses
+                          //             ?.materials
+                          //             ?.isNotEmpty ==
+                          //         true
+                          //     ? (mainData[index]
+                          //             .Courses!
+                          //             .materials
+                          //             .where((material) {
+                          //           return material.StudentMaterial.any(
+                          //               (item) =>
+                          //                   item.StudentId ==
+                          //                       mainData[index].studentsId &&
+                          //                   item.Done == true);
+                          //         }).length /
+                          //         mainData[index].Courses!.materials.length)
+                          //     : 0),
+                          // backgroundColor: Colors.black26,
+                          // progressBarColor: GFColors.DANGER),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          //_buildDurationAndRate()
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
