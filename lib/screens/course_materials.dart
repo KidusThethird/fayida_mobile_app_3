@@ -2,9 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:online_course/screens/video_details.dart';
 import 'package:online_course/screens/file_details.dart';
+import 'package:online_course/screens/link_details.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'link_details.dart';
+import 'assessment_details.dart';
 
 class CourseMaterialsScreen extends StatefulWidget {
   final String id;
@@ -198,42 +198,60 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
                                     ? Text('Locked',
                                         style: TextStyle(color: Colors.red))
                                     : null,
-                                onTap: () {
-                                  if (material['materialType'] == 'video') {
-                                    String videoId = material?['id'] ??
-                                        ''; // Get the video ID
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            VideoDetailScreen(videoId: videoId),
-                                      ),
-                                    );
-                                  } else if (material['materialType'] ==
-                                      'file') {
-                                    String fileId = material?['id'] ??
-                                        ''; // Get the file ID
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            FileDetailScreen(fileId: fileId),
-                                      ),
-                                    );
-                                  } else if (material['materialType'] ==
-                                      'link') {
-                                    String linkId = material?['id'] ??
-                                        ''; // Get the link ID
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => LinkScreen(
-                                            materialId:
-                                                linkId), // Navigate to LinkScreen
-                                      ),
-                                    );
-                                  }
-                                },
+                                onTap: isLocked
+                                    ? null // Prevent click on locked materials
+                                    : () {
+                                        if (material['materialType'] ==
+                                            'video') {
+                                          String videoId = material?['id'] ??
+                                              ''; // Get the video ID
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  VideoDetailScreen(
+                                                      videoId: videoId),
+                                            ),
+                                          );
+                                        } else if (material['materialType'] ==
+                                            'file') {
+                                          String fileId = material?['id'] ??
+                                              ''; // Get the file ID
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  FileDetailScreen(
+                                                      fileId: fileId),
+                                            ),
+                                          );
+                                        } else if (material['materialType'] ==
+                                            'link') {
+                                          String linkId = material?['id'] ??
+                                              ''; // Get the link ID
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => LinkScreen(
+                                                  materialId: linkId),
+                                            ),
+                                          );
+                                        } else if (material['materialType'] ==
+                                            'assessment') {
+                                          String assessmentId =
+                                              material?['id'] ??
+                                                  ''; // Get the assessment ID
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AssessmentScreen(
+                                                assessmentId: assessmentId,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
                               );
                             },
                           ),
