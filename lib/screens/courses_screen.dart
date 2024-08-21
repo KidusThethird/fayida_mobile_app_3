@@ -121,7 +121,9 @@ class _CoursesScreenState extends State<CoursesScreen>
               double calculateProgressValue(
                   int completedMaterials, int totalMaterials) {
                 return totalMaterials > 0
-                    ? ((completedMaterials - 1) * 100) / totalMaterials
+
+                    //Todo: fix here needed. the completedMaterials might need to be subtracted by one
+                    ? ((completedMaterials) * 100) / totalMaterials
                     : 0;
               }
 

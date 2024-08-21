@@ -15,7 +15,8 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
   List<dynamic> courseData = [];
   String message = "";
   bool isLoading = true;
-  List materials = [];
+  List<dynamic> materials = [];
+  String studentId = ''; // Store the student ID
 
   @override
   void initState() {
@@ -39,6 +40,7 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
           setState(() {
             courseData = response.data;
             materials = courseData[0]['Courses']['materials'];
+            studentId = courseData[0]['studentsId']; // Extract student ID
             isLoading = false;
           });
         } else {
@@ -87,8 +89,9 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
       groupedMaterials[part]!.add(material);
     }
 
-    List<dynamic> courseUnitsList =
-        courseData[0]['Courses']['CourseUnitsList'] ?? [];
+    List<dynamic> courseUnitsList = courseData.isNotEmpty
+        ? courseData[0]['Courses']['CourseUnitsList'] ?? []
+        : [];
 
     return Scaffold(
       appBar: AppBar(
@@ -106,9 +109,13 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
                       List<dynamic> partMaterials = groupedMaterials[part]!;
 
                       // Get the corresponding unit title
-                      String unitTitle = partIndex < courseUnitsList.length
-                          ? courseUnitsList[partIndex]['Title'] ?? ''
-                          : '';
+                      String unitTitle = '';
+                      if (partIndex < courseUnitsList.length) {
+                        unitTitle = courseUnitsList[partIndex]['Title'] ?? '';
+                      } else {
+                        unitTitle =
+                            'Extra Materials'; // Alternative title for extra units
+                      }
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,7 +125,9 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
                             child: Text(
                               'Chapter $part: $unitTitle',
                               style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           ListView.builder(
@@ -129,14 +138,15 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
                               var material = partMaterials[index];
                               String title;
 
+                              // Determine the title based on material type
                               switch (material['materialType']) {
                                 case 'video':
                                   title = material['video']?['vidTitle'] ??
                                       'No Title Available';
                                   break;
                                 case 'assessment':
-                                  title = material['assessmentId']
-                                          ?['assessmentTitle'] ??
+                                  title = material['assementId']
+                                          ?['assesmentTitle'] ??
                                       'No Title Available';
                                   break;
                                 case 'link':
@@ -150,10 +160,40 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
                                   break;
                               }
 
+                              // Check if material is locked
+                              bool isLocked = material['Access'] == 'locked';
+
+                              // Check if the material is completed
+                              bool isCompleted = material['StudentMaterial']
+                                      ?.any((studentMaterial) =>
+                                          studentMaterial['StudentId'] ==
+                                              studentId &&
+                                          studentMaterial['Done'] == true) ??
+                                  false;
+
                               return ListTile(
-                                leading: Icon(getIconForMaterial(
-                                    material['materialType'])),
-                                title: Text(title),
+                                leading: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (isLocked)
+                                      Icon(Icons.lock, color: Colors.red),
+                                    Icon(getIconForMaterial(
+                                        material['materialType'])),
+                                  ],
+                                ),
+                                title: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(title),
+                                    if (isCompleted)
+                                      Icon(Icons.check, color: Colors.green),
+                                  ],
+                                ),
+                                subtitle: isLocked
+                                    ? Text('Locked',
+                                        style: TextStyle(color: Colors.red))
+                                    : null,
                               );
                             },
                           ),
