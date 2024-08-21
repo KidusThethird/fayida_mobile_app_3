@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class CourseMaterialsScreen extends StatefulWidget {
   final String id;
 
-  // Constructor to accept the ID
   CourseMaterialsScreen({required this.id});
 
   @override
@@ -15,18 +14,13 @@ class CourseMaterialsScreen extends StatefulWidget {
 class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
   List<dynamic> courseData = [];
   String message = "";
-  bool isLoading = true; // Loading state indicator
+  bool isLoading = true;
   List materials = [];
 
   @override
   void initState() {
     super.initState();
     fetchCourses();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   Future<void> fetchCourses() async {
@@ -42,30 +36,27 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
             'https://api.fayidaacademy.com/purchaselist/specificStudentSingleCourse/${widget.id}');
 
         if (response.statusCode == 200) {
-          print("Fetched data: ${response.data}");
           setState(() {
             courseData = response.data;
             materials = courseData[0]['Courses']['materials'];
-
-            isLoading = false; // Set loading to false after data is fetched
+            isLoading = false;
           });
         } else {
-          print("Error: NO data fetched");
           setState(() {
             message = "Error: ${response.statusMessage}";
-            isLoading = false; // Set loading to false even on error
+            isLoading = false;
           });
         }
       } catch (e) {
         setState(() {
           message = "Error: $e";
-          isLoading = false; // Set loading to false on exception
+          isLoading = false;
         });
       }
     } else {
       setState(() {
         message = "No cookies found. Please log in.";
-        isLoading = false; // Set loading to false if no cookies
+        isLoading = false;
       });
     }
   }
@@ -75,16 +66,29 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
     IconData getIconForMaterial(String materialType) {
       switch (materialType) {
         case 'video':
-          return Icons.play_arrow; // Play icon
+          return Icons.play_arrow;
         case 'assessment':
-          return Icons.assignment; // Assessment icon
+          return Icons.assignment;
         case 'link':
-          return Icons.link; // Link icon
+          return Icons.link;
         case 'file':
         default:
-          return Icons.attach_file; // File icon
+          return Icons.attach_file;
       }
     }
+
+    // Group materials by part
+    Map<String, List<dynamic>> groupedMaterials = {};
+    for (var material in materials) {
+      String part = material['part'] ?? 'Unknown Part';
+      if (!groupedMaterials.containsKey(part)) {
+        groupedMaterials[part] = [];
+      }
+      groupedMaterials[part]!.add(material);
+    }
+
+    List<dynamic> courseUnitsList =
+        courseData[0]['Courses']['CourseUnitsList'] ?? [];
 
     return Scaffold(
       appBar: AppBar(
@@ -92,49 +96,68 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
       ),
       body: Center(
         child: isLoading
-            ? CircularProgressIndicator() // Show loading spinner
+            ? CircularProgressIndicator()
             : message.isNotEmpty
-                ? Text(message) // Show error message if needed
+                ? Text(message)
                 : ListView.builder(
-                    itemCount: materials.length,
-                    itemBuilder: (context, index) {
-                      var material = materials[index];
-                      String title;
+                    itemCount: groupedMaterials.keys.length,
+                    itemBuilder: (context, partIndex) {
+                      String part = groupedMaterials.keys.elementAt(partIndex);
+                      List<dynamic> partMaterials = groupedMaterials[part]!;
 
-                      // Determine the title based on material type
-                      switch (material['materialType']) {
-                        case 'video':
-                          title = (material['video'] != null &&
-                                  material['video'].containsKey('vidTitle'))
-                              ? material['video']['vidTitle'] ?? ''
-                              : '';
-                          break;
-                        case 'assessment':
-                          title = (material['assementId'] != null &&
-                                  material['assementId']
-                                      .containsKey('assesmentTitle'))
-                              ? material['assementId']['assesmentTitle'] ?? ''
-                              : '';
-                          break;
-                        case 'link':
-                          title = (material['link'] != null &&
-                                  material['link'].containsKey('title'))
-                              ? material['link']['title'] ?? ''
-                              : '';
-                          break;
-                        case 'file':
-                        default:
-                          title = (material['file'] != null &&
-                                  material['file'].containsKey('title'))
-                              ? material['file']['title'] ?? ''
-                              : '';
-                          break;
-                      }
+                      // Get the corresponding unit title
+                      String unitTitle = partIndex < courseUnitsList.length
+                          ? courseUnitsList[partIndex]['Title'] ?? ''
+                          : '';
 
-                      return ListTile(
-                        leading:
-                            Icon(getIconForMaterial(material['materialType'])),
-                        title: Text(title),
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Chapter $part: $unitTitle',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: partMaterials.length,
+                            itemBuilder: (context, index) {
+                              var material = partMaterials[index];
+                              String title;
+
+                              switch (material['materialType']) {
+                                case 'video':
+                                  title = material['video']?['vidTitle'] ??
+                                      'No Title Available';
+                                  break;
+                                case 'assessment':
+                                  title = material['assessmentId']
+                                          ?['assessmentTitle'] ??
+                                      'No Title Available';
+                                  break;
+                                case 'link':
+                                  title = material['link']?['title'] ??
+                                      'No Title Available';
+                                  break;
+                                case 'file':
+                                default:
+                                  title = material['file']?['title'] ??
+                                      'No Title Available';
+                                  break;
+                              }
+
+                              return ListTile(
+                                leading: Icon(getIconForMaterial(
+                                    material['materialType'])),
+                                title: Text(title),
+                              );
+                            },
+                          ),
+                        ],
                       );
                     },
                   ),
