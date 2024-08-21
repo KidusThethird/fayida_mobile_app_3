@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:online_course/screens/root_app.dart';
+import 'package:online_course/screens/video_details.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_course/screens/login.dart';
 import 'package:online_course/screens/profiletest.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
             // If firstName is present, navigate to ProfileScreen
             if (snapshot.data == true) {
               return RootApp();
+              // return MyAppx();
             }
           }
           // By default or if firstName is absent, go to LoginScreen

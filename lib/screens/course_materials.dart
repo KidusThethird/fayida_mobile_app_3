@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:online_course/screens/video_details.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CourseMaterialsScreen extends StatefulWidget {
@@ -194,6 +195,20 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
                                     ? Text('Locked',
                                         style: TextStyle(color: Colors.red))
                                     : null,
+                                onTap: () {
+                                  if (material['materialType'] == 'video') {
+                                    String videoId = material?['id'] ??
+                                        ''; // Get the video ID
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            VideoDetailScreen(videoId: videoId),
+                                        //VideoDetailScreen(),
+                                      ),
+                                    );
+                                  }
+                                },
                               );
                             },
                           ),
