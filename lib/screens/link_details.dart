@@ -78,7 +78,8 @@ class _LinkScreenState extends State<LinkScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Material Details'),
+        title: Text('Link Details'),
+        backgroundColor: Color.fromARGB(255, 7, 49, 9),
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
@@ -101,9 +102,16 @@ class _LinkScreenState extends State<LinkScreen> {
                       ),
                       SizedBox(height: 20),
                       ElevatedButton(
-                        onPressed: _launchURL,
-                        child: Text('View in Browser'),
-                      ),
+                          onPressed: _launchURL,
+                          child: Text('View in Browser'),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(16.0),
+                            backgroundColor: Color.fromARGB(255, 7, 49,
+                                9), // Make the button background transparent
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          )),
                     ],
                   ),
                 ),

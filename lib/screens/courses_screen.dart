@@ -21,6 +21,7 @@ class _CoursesScreenState extends State<CoursesScreen>
   List<dynamic> packages = [];
   String message = "";
   List<dynamic> mainData = [];
+  List<dynamic> packageListData = [];
 
   @override
   void initState() {
@@ -46,6 +47,8 @@ class _CoursesScreenState extends State<CoursesScreen>
       try {
         final response = await dio.get(
             'https://api.fayidaacademy.com/purchaselist/specificStudentCourses');
+        final package_response = await dio
+            .get('https://api.fayidaacademy.com/purchaselist/getpuchasedlist');
 
         if (response.statusCode == 200) {
           print("Fetched data: ${response.data}"); // Inspect the response
@@ -54,6 +57,22 @@ class _CoursesScreenState extends State<CoursesScreen>
             inProgressCourses = response.data['inProgress'] ?? [];
             completedCourses = response.data['completed'] ?? [];
             packages = response.data['packages'] ?? [];
+          });
+        } else {
+          print("data: NO data fetched");
+          setState(() {
+            message = "Error: ${response.statusMessage}";
+          });
+        }
+
+        if (package_response.statusCode == 200) {
+          print(
+              "Fetched data: ${package_response.data}"); // Inspect the response
+          setState(() {
+            packageListData = package_response.data; // Update mainData
+            //  inProgressCourses = response.data['inProgress'] ?? [];
+            //  completedCourses = response.data['completed'] ?? [];
+            //  packages = response.data['packages'] ?? [];
           });
         } else {
           print("data: NO data fetched");
@@ -78,12 +97,13 @@ class _CoursesScreenState extends State<CoursesScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text('Courses'),
+        backgroundColor: Color.fromARGB(255, 7, 49, 9),
         bottom: TabBar(
           controller: tabController,
           tabs: [
             Tab(text: 'In Progress'),
             Tab(text: 'Completed'),
-            Tab(text: 'Packages'),
+            //    Tab(text: 'Packages'),
           ],
         ),
       ),
@@ -92,7 +112,7 @@ class _CoursesScreenState extends State<CoursesScreen>
         children: [
           Center(child: _inProgressCourses()),
           Center(child: _completedCourses()),
-          Center(child: _packagesSection()),
+          //  Center(child: _packagesSection()),
         ],
       ),
     );
@@ -281,12 +301,71 @@ class _CoursesScreenState extends State<CoursesScreen>
     );
   }
 
+  // Widget _packagesSection() {
+  //   return ListView.builder(
+  //     itemCount: packages.length,
+  //     itemBuilder: (context, index) {
+  //       return ListTile(
+  //         title: Text(packages[index]['title'] ?? 'Unknown package'),
+  //       );
+  //     },
+  //   );
+  // }
+
   Widget _packagesSection() {
     return ListView.builder(
-      itemCount: packages.length,
+      itemCount: packageListData.length,
       itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(packages[index]['title'] ?? 'Unknown package'),
+        final package = packageListData[index];
+        final activatedDate =
+            DateTime.parse(packageListData[index]['activatedDate']);
+        final expiryDate = DateTime.parse(packageListData[index]['expiryDate']);
+        final daysLeft = expiryDate.difference(DateTime.now()).inDays;
+
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: Image.network(
+                  packageListData[index]['thumbnailUrl'][0],
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(width: 16.0),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      package['packageName'],
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0,
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    Text(
+                      'Expires in $daysLeft days',
+                      style: TextStyle(
+                        color: daysLeft <= 7 ? Colors.red : Colors.grey,
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    Text(
+                      package['packageDescription'],
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         );
       },
     );

@@ -54,9 +54,8 @@ class _ExamScreenState extends State<ExamScreen> {
                   .toList();
               questionCount = questions.length;
               selectedAnswers = List.filled(questionCount, null);
-              // _start = int.parse(examInfo['duration'].toString()) *
-              //     60;
-              _start = 15;
+              _start = int.parse(examInfo['duration'].toString()) * 60;
+
               isLoading = false;
             });
             startTimer();
@@ -224,6 +223,7 @@ class _ExamScreenState extends State<ExamScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Exam Details'),
+        backgroundColor: Color.fromARGB(255, 7, 49, 9),
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
@@ -243,7 +243,9 @@ class _ExamScreenState extends State<ExamScreen> {
                         SizedBox(height: 10),
                         Text(
                           'Time Remaining: ${_start ~/ 60}:${(_start % 60).toString().padLeft(2, '0')}',
-                          style: TextStyle(fontSize: 20, color: Colors.red),
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: Color.fromARGB(255, 5, 24, 10)),
                         ),
                         SizedBox(height: 10),
                         Text(

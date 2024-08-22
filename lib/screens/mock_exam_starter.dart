@@ -50,6 +50,7 @@ class _MockExamStartState extends State<MockExamStart> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mock Exam'),
+        backgroundColor: Color.fromARGB(255, 7, 49, 9),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -63,11 +64,15 @@ class _MockExamStartState extends State<MockExamStart> {
           itemBuilder: (context, index) {
             final folder = folderData[index];
             return ElevatedButton(
-              onPressed: () {
-                navigateToMockExamList(folder["folderName"]);
-              },
-              child: Text(folder["folderName"]),
-            );
+                onPressed: () {
+                  navigateToMockExamList(folder["folderName"]);
+                },
+                child: Text(folder["folderName"]),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 13, 82,
+                      17), // Make the button background transparent
+                  shape: RoundedRectangleBorder(),
+                ));
           },
         ),
       ),
@@ -114,6 +119,7 @@ class _MockExamListScreenState extends State<MockExamListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.folderName),
+        backgroundColor: Color.fromARGB(255, 7, 49, 9),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

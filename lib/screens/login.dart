@@ -5,6 +5,7 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:online_course/screens/root_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_course/screens/profiletest.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -81,6 +82,12 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  void _launchUrl(String url) async {
+    if (!await launchUrl(Uri.parse(url))) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,124 +122,132 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             SizedBox(height: 20),
             Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(60),
-                    topRight: Radius.circular(60),
+              child: SingleChildScrollView(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(60),
+                      topRight: Radius.circular(60),
+                    ),
                   ),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(30),
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(height: 60),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color.fromRGBO(9, 73, 9, 0.294),
-                              blurRadius: 20,
-                              offset: Offset(0, 10),
-                            )
-                          ],
-                        ),
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom:
-                                      BorderSide(color: Colors.grey.shade200),
+                  child: Padding(
+                    padding: EdgeInsets.all(30),
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: 60),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color.fromRGBO(9, 73, 9, 0.294),
+                                blurRadius: 20,
+                                offset: Offset(0, 10),
+                              )
+                            ],
+                          ),
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom:
+                                        BorderSide(color: Colors.grey.shade200),
+                                  ),
+                                ),
+                                child: TextField(
+                                  controller: _emailController,
+                                  decoration: InputDecoration(
+                                    hintText: "Email ",
+                                    hintStyle: TextStyle(color: Colors.grey),
+                                    border: InputBorder.none,
+                                  ),
                                 ),
                               ),
-                              child: TextField(
-                                controller: _emailController,
-                                decoration: InputDecoration(
-                                  hintText: "Email or Phone number",
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  border: InputBorder.none,
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom:
+                                        BorderSide(color: Colors.grey.shade200),
+                                  ),
+                                ),
+                                child: TextField(
+                                  controller: _passwordController,
+                                  obscureText: true,
+                                  decoration: InputDecoration(
+                                    hintText: "Password",
+                                    hintStyle: TextStyle(color: Colors.grey),
+                                    border: InputBorder.none,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom:
-                                      BorderSide(color: Colors.grey.shade200),
-                                ),
-                              ),
-                              child: TextField(
-                                controller: _passwordController,
-                                obscureText: true,
-                                decoration: InputDecoration(
-                                  hintText: "Password",
-                                  hintStyle: TextStyle(color: Colors.grey),
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 40),
-                      MaterialButton(
-                        onPressed: _login,
-                        height: 50,
-                        color: Color.fromARGB(255, 18, 155, 64),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: Center(
-                          child: Text(
-                            "Login",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
+                            ],
                           ),
                         ),
-                      ),
-                      SizedBox(height: 50),
-                      Text("New to Fayida?",
-                          style: TextStyle(color: Colors.grey)),
-                      SizedBox(height: 30),
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: MaterialButton(
-                              onPressed: () {},
-                              height: 50,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: Center(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 14, 78, 20),
-                                    borderRadius: BorderRadius.circular(50),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Text(
-                                      "Sign Up",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold),
+                        SizedBox(height: 40),
+                        MaterialButton(
+                          onPressed: _login,
+                          height: 50,
+                          color: Color.fromARGB(255, 18, 155, 64),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Login",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 50),
+                        Text("New to Fayida?",
+                            style: TextStyle(color: Colors.grey)),
+                        SizedBox(height: 30),
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: MaterialButton(
+                                onPressed: () {},
+                                height: 50,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _launchUrl(
+                                        'https://fayidaacademy.com/signup');
+                                  },
+                                  child: Center(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Color.fromARGB(255, 14, 78, 20),
+                                        borderRadius: BorderRadius.circular(50),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Text(
+                                          "Sign Up",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          SizedBox(width: 30),
-                        ],
-                      ),
-                    ],
+                            SizedBox(width: 30),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -123,9 +123,16 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
                       ),
                       SizedBox(height: 20), // Add spacing for button
                       ElevatedButton(
-                        onPressed: _takeExam, // Call the function on pressed
-                        child: Text('Take Exam'),
-                      ),
+                          onPressed: _takeExam, // Call the function on pressed
+                          child: Text('Take Exam'),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(16.0),
+                            backgroundColor: Colors
+                                .transparent, // Make the button background transparent
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          )),
                     ],
                   ),
                 ),

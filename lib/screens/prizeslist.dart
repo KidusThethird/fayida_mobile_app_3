@@ -82,12 +82,19 @@ class _PrizesScreenState extends State<PrizesScreen> {
             child: Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {
-              _handlePurchase(prizePoints, prizeId, prizeName);
-              Navigator.of(context).pop();
-            },
-            child: Text('Confirm'),
-          ),
+              onPressed: () {
+                _handlePurchase(prizePoints, prizeId, prizeName);
+                Navigator.of(context).pop();
+              },
+              child: Text('Confirm'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.all(16.0),
+                backgroundColor: Color.fromARGB(
+                    255, 7, 49, 9), // Make the button background transparent
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              )),
         ],
       ),
     );
@@ -133,6 +140,7 @@ class _PrizesScreenState extends State<PrizesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Prizes'),
+        backgroundColor: Color.fromARGB(255, 7, 49, 9),
       ),
       body: Column(
         children: [

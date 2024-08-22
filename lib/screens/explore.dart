@@ -47,6 +47,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Explore Packages'),
+        backgroundColor: Color.fromARGB(255, 7, 49, 9),
       ),
       body: Column(
         children: [

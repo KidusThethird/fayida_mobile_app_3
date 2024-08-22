@@ -174,7 +174,10 @@ class _HomePageState extends State<HomePage> {
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black,
               ),
-              child: Text('Explore'),
+              child: Text(
+                'Explore',
+                style: TextStyle(color: Color.fromARGB(255, 7, 49, 9)),
+              ),
             ),
           ),
         ),
@@ -196,7 +199,10 @@ class _HomePageState extends State<HomePage> {
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black,
               ),
-              child: Text('Prize'),
+              child: Text(
+                'Prize',
+                style: TextStyle(color: Color.fromARGB(255, 7, 49, 9)),
+              ),
             ),
           ),
         ),
@@ -218,7 +224,10 @@ class _HomePageState extends State<HomePage> {
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black,
               ),
-              child: Text('Leaderboard'),
+              child: Text(
+                'Leaderboard',
+                style: TextStyle(color: Color.fromARGB(255, 7, 49, 9)),
+              ),
             ),
           ),
         ),
@@ -251,7 +260,11 @@ class _HomePageState extends State<HomePage> {
               ),
             );
           } else {
-            return Center(child: CircularProgressIndicator());
+            return Center(
+                child: CircularProgressIndicator(
+              valueColor:
+                  AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 7, 49, 9)),
+            ));
           }
         });
   }

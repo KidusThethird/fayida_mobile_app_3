@@ -98,6 +98,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Video Details'),
+        backgroundColor: Color.fromARGB(255, 7, 49, 9),
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())

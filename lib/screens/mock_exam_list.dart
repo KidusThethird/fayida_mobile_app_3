@@ -52,7 +52,10 @@ class _MockExamDetailsState extends State<MockExamDetails> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(mockExamData!['title']),
+        title: Text(
+          mockExamData!['title'],
+        ),
+        backgroundColor: Color.fromARGB(255, 7, 49, 9),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

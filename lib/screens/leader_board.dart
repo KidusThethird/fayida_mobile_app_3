@@ -36,6 +36,7 @@ class _LeaderBoardScreenState extends State<LeaderBoardScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Leaderboard'),
+        backgroundColor: Color.fromARGB(255, 7, 49, 9),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),

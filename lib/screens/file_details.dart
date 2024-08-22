@@ -86,6 +86,7 @@ class _FileDetailScreenState extends State<FileDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('File Details'),
+        backgroundColor: Color.fromARGB(255, 7, 49, 9),
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())

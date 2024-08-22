@@ -101,6 +101,7 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Course Details'),
+        backgroundColor: Color.fromARGB(255, 7, 49, 9),
       ),
       body: Center(
         child: isLoading
