@@ -6,6 +6,7 @@ import 'package:online_course/utils/constant.dart';
 import 'package:online_course/widgets/bottombar_item.dart';
 import 'courses_screen.dart';
 import 'home.dart';
+import 'mock_exam_starter.dart';
 
 class RootApp extends StatefulWidget {
   const RootApp({Key? key}) : super(key: key);
@@ -23,9 +24,9 @@ class _RootAppState extends State<RootApp> with TickerProviderStateMixin {
       "page": HomePage(),
     },
     {
-      "icon": "assets/icons/search.svg",
-      "active_icon": "assets/icons/search.svg",
-      "page": Container(),
+      "icon": "assets/icons/discover.svg",
+      "active_icon": "assets/icons/discover.svg",
+      "page": MockExamStart(),
     },
     {
       "icon": "assets/icons/play.svg",
@@ -33,8 +34,8 @@ class _RootAppState extends State<RootApp> with TickerProviderStateMixin {
       "page": CoursesScreen(),
     },
     {
-      "icon": "assets/icons/chat.svg",
-      "active_icon": "assets/icons/chat.svg",
+      "icon": "assets/icons/bell.svg",
+      "active_icon": "assets/icons/bell.svg",
       "page": ChatPage(),
     },
     {
