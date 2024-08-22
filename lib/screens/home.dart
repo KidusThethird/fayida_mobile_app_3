@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:online_course/screens/prizeslist.dart';
 import 'package:online_course/theme/color.dart';
 import 'package:online_course/utils/data.dart';
 //import 'package:online_course/utils/fetch_package_model.dart';
@@ -19,6 +20,7 @@ import '../services/blogList_services.dart';
 import '../widgets/blog_item.dart';
 
 import '../services/packageList_services.dart';
+import '../widgets/drawer.dart';
 import '../widgets/package_item.dart';
 
 class HomePage extends StatefulWidget {
@@ -36,20 +38,12 @@ class _HomePageState extends State<HomePage> {
     print("response.body");
   }
 
-  Future getProfile() async {
-    var response = await http
-        .get(Uri.https('api.fayidaacademy.com', 'login_register/profile'));
-    var jsonData = jsonDecode(response.body);
-    print("response.body");
-  }
-
   @override
   void initState() {
     print("comon");
     PackageListServices().getAllPackages();
 
     super.initState();
-    getProfile();
     getPackageList(); // Call this in initState to load data when the widget is created
   }
 
@@ -81,34 +75,26 @@ class _HomePageState extends State<HomePage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                profile["name"]!,
-                style: TextStyle(
-                  color: AppColor.labelColor,
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              Text(
-                "Good Morning!",
-                style: TextStyle(
-                  color: AppColor.textColor,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 18,
-                ),
-              ),
-            ],
+        Container(
+          child: Image.asset(
+            'assets/images/smalllogo.png',
+            width: 100,
+            height: 50,
+            fit: BoxFit.cover,
           ),
         ),
-        NotificationBox(
-          notifiedNumber: 1,
+        GestureDetector(
+          onTap: () {
+            // Add your menu bar icon functionality here
+            print('Menu bar icon tapped');
+          },
+          child: Container(
+            padding: const EdgeInsets.all(8.0),
+            // child: Icon(
+            //   Icons.menu,
+            //   color: AppColor.textColor,
+            // ),
+          ),
         )
       ],
     );
@@ -164,23 +150,69 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _buildCategories() {
-    return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(15, 10, 0, 10),
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: List.generate(
-          categories.length,
-          (index) => Padding(
-            padding: const EdgeInsets.only(right: 15),
-            child: CategoryBox(
-              selectedColor: Colors.white,
-              data: categories[index],
-              onTap: null,
+  Widget _buildCategories() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed: () {
+                // Handle first button click
+              },
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+              ),
+              child: Text('Explore'),
             ),
           ),
         ),
-      ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PrizesScreen()),
+                );
+                // Handle second button click
+              },
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+              ),
+              child: Text('Prize'),
+            ),
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed: () {
+                // Handle third button click
+              },
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+              ),
+              child: Text('Web'),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
