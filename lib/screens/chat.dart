@@ -99,6 +99,8 @@ class _ChatPageState extends State<ChatPage> {
       child: ListView.builder(
         padding: EdgeInsets.all(10),
         shrinkWrap: true,
+        physics:
+            NeverScrollableScrollPhysics(), // Disable scrolling within the ListView
         itemCount: notifications.length,
         itemBuilder: (context, index) {
           final notification = notifications[index];

@@ -22,6 +22,7 @@ import '../widgets/blog_item.dart';
 import '../services/packageList_services.dart';
 import '../widgets/drawer.dart';
 import '../widgets/package_item.dart';
+import 'leader_board.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -199,6 +200,10 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LeaderBoardScreen()),
+                );
                 // Handle third button click
               },
               style: ElevatedButton.styleFrom(
@@ -208,7 +213,7 @@ class _HomePageState extends State<HomePage> {
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black,
               ),
-              child: Text('Web'),
+              child: Text('Leaderboard'),
             ),
           ),
         ),
