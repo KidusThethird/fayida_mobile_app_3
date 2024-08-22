@@ -22,6 +22,7 @@ import '../widgets/blog_item.dart';
 import '../services/packageList_services.dart';
 import '../widgets/drawer.dart';
 import '../widgets/package_item.dart';
+import 'explore.dart';
 import 'leader_board.dart';
 
 class HomePage extends StatefulWidget {
@@ -160,6 +161,10 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ExploreScreen()),
+                );
                 // Handle first button click
               },
               style: ElevatedButton.styleFrom(
