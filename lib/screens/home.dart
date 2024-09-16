@@ -24,6 +24,7 @@ import '../widgets/drawer.dart';
 import '../widgets/package_item.dart';
 import 'explore.dart';
 import 'leader_board.dart';
+import 'dart:async';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -40,13 +41,48 @@ class _HomePageState extends State<HomePage> {
     print("response.body");
   }
 
+  late PageController _pageController;
+  int _currentPage = 0;
+  late Timer _timer;
+
+  final List<String> _images = [
+    'assets/images/appbanner1.jpg',
+    'assets/images/appbanner2.jpg',
+    'assets/images/appbanner3.jpg',
+    'assets/images/appbanner4.jpg',
+  ];
+
   @override
   void initState() {
     print("comon");
     PackageListServices().getAllPackages();
 
     super.initState();
+    _pageController = PageController();
+    _startAutoSlide();
     getPackageList(); // Call this in initState to load data when the widget is created
+  }
+
+  void _startAutoSlide() {
+    _timer = Timer.periodic(Duration(seconds: 3), (timer) {
+      if (_currentPage < _images.length - 1) {
+        _currentPage++;
+      } else {
+        _currentPage = 0;
+      }
+      _pageController.animateToPage(
+        _currentPage,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -108,6 +144,7 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          _buildScrollingImage(),
           _buildCategories(),
           const SizedBox(
             height: 15,
@@ -232,6 +269,22 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ],
+    );
+  }
+
+  _buildScrollingImage() {
+    return Container(
+      height: 100,
+      child: PageView.builder(
+        controller: _pageController,
+        itemCount: _images.length,
+        itemBuilder: (context, index) {
+          return Image.asset(
+            _images[index],
+            fit: BoxFit.cover,
+          );
+        },
+      ),
     );
   }
 
