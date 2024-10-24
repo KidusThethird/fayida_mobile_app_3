@@ -201,7 +201,8 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
                                         style: TextStyle(color: Colors.red))
                                     : null,
                                 onTap: () {
-                                  if (material['materialType'] == 'video') {
+                                  if (material['materialType'] == 'video' &&
+                                      !isLocked) {
                                     String videoId = material?['id'] ??
                                         ''; // Get the video ID
                                     Navigator.push(
@@ -212,7 +213,8 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
                                       ),
                                     );
                                   } else if (material['materialType'] ==
-                                      'file') {
+                                          'file' &&
+                                      !isLocked) {
                                     String fileId = material?['id'] ??
                                         ''; // Get the file ID
                                     Navigator.push(
@@ -223,7 +225,8 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
                                       ),
                                     );
                                   } else if (material['materialType'] ==
-                                      'link') {
+                                          'link' &&
+                                      !isLocked) {
                                     String linkId = material?['id'] ??
                                         ''; // Get the link ID
                                     Navigator.push(
@@ -235,7 +238,8 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
                                       ),
                                     );
                                   } else if (material['materialType'] ==
-                                      'assessment') {
+                                          'assessment' &&
+                                      !isLocked) {
                                     String assessmentId = material?['id'] ??
                                         ''; // Get the assessment ID
                                     Navigator.push(

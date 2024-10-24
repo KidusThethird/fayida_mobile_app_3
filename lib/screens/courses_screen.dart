@@ -143,7 +143,8 @@ class _CoursesScreenState extends State<CoursesScreen>
                 return totalMaterials > 0
 
                     //Todo: fix here needed. the completedMaterials might need to be subtracted by one
-                    ? ((completedMaterials) * 100) / totalMaterials
+                    ? double.parse(((completedMaterials) * 100 / totalMaterials)
+                        .toStringAsFixed(1))
                     : 0;
               }
 

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/custom_text_widget.dart';
 import 'correction_screen.dart';
 
 class ExamScreen extends StatefulWidget {
@@ -41,13 +42,14 @@ class _ExamScreenState extends State<ExamScreen> {
         final response = await dio.get(
           'https://api.fayidaacademy.com/purchaselist/specificStudentSingleAssessment/${widget.examId}',
         );
-
+        print("Iddd :" + widget.examId);
         if (response.statusCode == 200) {
           List<dynamic> examData = response.data;
 
           if (examData.isNotEmpty) {
             setState(() {
               var examInfo = examData[0];
+              print("This is printed : " + response.toString());
               examTitle = examInfo['assesmentTitle'] ?? 'No Title';
               questions = (examInfo['question'] as List)
                   .map((q) => Question.fromJson(q))
@@ -222,7 +224,7 @@ class _ExamScreenState extends State<ExamScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Exam Details'),
+        title: Text('Exam Details '),
         backgroundColor: Color.fromARGB(255, 7, 49, 9),
       ),
       body: isLoading
@@ -249,7 +251,7 @@ class _ExamScreenState extends State<ExamScreen> {
                         ),
                         SizedBox(height: 10),
                         Text(
-                          'Number of Questions: $questionCount',
+                          'Number of Questions: $questionCount ${widget.examId}',
                           style: TextStyle(fontSize: 16),
                         ),
                         Text(
@@ -288,16 +290,36 @@ class _ExamScreenState extends State<ExamScreen> {
 
 class Question {
   final String questionText;
+  final String choicea;
+  final String choiceb;
+  final String choicec;
+  final String choiced;
+  final List<String> choiceContent;
   final List<String> choices;
 
   Question({
     required this.questionText,
     required this.choices,
+    required this.choicea,
+    required this.choiceb,
+    required this.choicec,
+    required this.choiced,
+    required this.choiceContent,
   });
 
   factory Question.fromJson(Map<String, dynamic> json) {
     return Question(
       questionText: json['question'],
+      choicea: json['choiseA'],
+      choiceb: json['choiseB'],
+      choicec: json['choiseC'],
+      choiced: json['choiseD'],
+      choiceContent: [
+        json['choiseA'],
+        json['choiseB'],
+        json['choiseC'],
+        json['choiseD']
+      ],
       choices: [
         'a',
         'b',
@@ -341,13 +363,20 @@ class _QuestionWidgetState extends State<QuestionWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Q${widget.questionNumber}: ${widget.question.questionText}',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            // Text(
+            //   'Q${widget.questionNumber}: ${widget.question.questionText}',
+            //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            // ),
+
+            CustomTextWidget(
+              text:
+                  ' Q${widget.questionNumber}: ${widget.question.questionText}',
             ),
+
             SizedBox(height: 8.0),
             ...List.generate(widget.question.choices.length, (index) {
               String choiceLetter = widget.question.choices[index];
+              String choiceText = widget.question.choiceContent[index];
               bool isSelected = selectedChoice == choiceLetter;
 
               return GestureDetector(
@@ -370,12 +399,20 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                         });
                       },
                     ),
-                    Text(
-                      '$choiceLetter',
-                      style: TextStyle(
+
+                    CustomTextWidget(
+                      text: ' $choiceLetter : $choiceText',
+                      baseStyle: TextStyle(
                         color: isSelected ? Colors.green : Colors.black,
                       ),
                     ),
+
+                    // Text(
+                    //   '$choiceLetter : $choiceText',
+                    //   style: TextStyle(
+                    //     color: isSelected ? Colors.green : Colors.black,
+                    //   ),
+                    // ),
                   ],
                 ),
               );
