@@ -108,156 +108,162 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
             ? CircularProgressIndicator()
             : message.isNotEmpty
                 ? Text(message)
-                : ListView.builder(
-                    itemCount: groupedMaterials.keys.length,
-                    itemBuilder: (context, partIndex) {
-                      String part = groupedMaterials.keys.elementAt(partIndex);
-                      List<dynamic> partMaterials = groupedMaterials[part]!;
+                : RefreshIndicator(
+                    onRefresh: fetchCourses, // Call fetchCourses when refreshed
+                    child: ListView.builder(
+                      itemCount: groupedMaterials.keys.length,
+                      itemBuilder: (context, partIndex) {
+                        String part =
+                            groupedMaterials.keys.elementAt(partIndex);
+                        List<dynamic> partMaterials = groupedMaterials[part]!;
 
-                      // Get the corresponding unit title
-                      String unitTitle = '';
-                      if (partIndex < courseUnitsList.length) {
-                        unitTitle = courseUnitsList[partIndex]['Title'] ?? '';
-                      } else {
-                        unitTitle =
-                            'Extra Materials'; // Alternative title for extra units
-                      }
+                        // Get the corresponding unit title
+                        String unitTitle = '';
+                        if (partIndex < courseUnitsList.length) {
+                          unitTitle = courseUnitsList[partIndex]['Title'] ?? '';
+                        } else {
+                          unitTitle =
+                              'Extra Materials'; // Alternative title for extra units
+                        }
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Chapter $part: $unitTitle',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Chapter $part: $unitTitle',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                          ),
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: partMaterials.length,
-                            itemBuilder: (context, index) {
-                              var material = partMaterials[index];
-                              String title;
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: partMaterials.length,
+                              itemBuilder: (context, index) {
+                                var material = partMaterials[index];
+                                String title;
 
-                              // Determine the title based on material type
-                              switch (material['materialType']) {
-                                case 'video':
-                                  title = material['video']?['vidTitle'] ??
-                                      'No Title Available';
-                                  break;
-                                case 'assessment':
-                                  title = material['assementId']
-                                          ?['assesmentTitle'] ??
-                                      'No Title Available';
-                                  break;
-                                case 'link':
-                                  title = material['link']?['title'] ??
-                                      'No Title Available';
-                                  break;
-                                case 'file':
-                                default:
-                                  title = material['file']?['title'] ??
-                                      'No Title Available';
-                                  break;
-                              }
+                                // Determine the title based on material type
+                                switch (material['materialType']) {
+                                  case 'video':
+                                    title = material['video']?['vidTitle'] ??
+                                        'No Title Available';
+                                    break;
+                                  case 'assessment':
+                                    title = material['assementId']
+                                            ?['assesmentTitle'] ??
+                                        'No Title Available';
+                                    break;
+                                  case 'link':
+                                    title = material['link']?['title'] ??
+                                        'No Title Available';
+                                    break;
+                                  case 'file':
+                                  default:
+                                    title = material['file']?['title'] ??
+                                        'No Title Available';
+                                    break;
+                                }
 
-                              // Check if material is locked
-                              bool isLocked = material['Access'] == 'locked';
+                                // Check if material is locked
+                                bool isLocked = material['Access'] == 'locked';
 
-                              // Check if the material is completed
-                              bool isCompleted = material['StudentMaterial']
-                                      ?.any((studentMaterial) =>
-                                          studentMaterial['StudentId'] ==
-                                              studentId &&
-                                          studentMaterial['Done'] == true) ??
-                                  false;
+                                // Check if the material is completed
+                                bool isCompleted = material['StudentMaterial']
+                                        ?.any((studentMaterial) =>
+                                            studentMaterial['StudentId'] ==
+                                                studentId &&
+                                            studentMaterial['Done'] == true) ??
+                                    false;
 
-                              return ListTile(
-                                leading: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    if (isLocked)
-                                      Icon(Icons.lock, color: Colors.red),
-                                    Icon(getIconForMaterial(
-                                        material['materialType'])),
-                                  ],
-                                ),
-                                title: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(title),
-                                    if (isCompleted)
-                                      Icon(Icons.check, color: Colors.green),
-                                  ],
-                                ),
-                                subtitle: isLocked
-                                    ? Text('Locked',
-                                        style: TextStyle(color: Colors.red))
-                                    : null,
-                                onTap: () {
-                                  if (material['materialType'] == 'video' &&
-                                      !isLocked) {
-                                    String videoId = material?['id'] ??
-                                        ''; // Get the video ID
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            VideoDetailScreen(videoId: videoId),
-                                      ),
-                                    );
-                                  } else if (material['materialType'] ==
-                                          'file' &&
-                                      !isLocked) {
-                                    String fileId = material?['id'] ??
-                                        ''; // Get the file ID
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            FileDetailScreen(fileId: fileId),
-                                      ),
-                                    );
-                                  } else if (material['materialType'] ==
-                                          'link' &&
-                                      !isLocked) {
-                                    String linkId = material?['id'] ??
-                                        ''; // Get the link ID
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => LinkScreen(
-                                            materialId:
-                                                linkId), // Navigate to LinkScreen
-                                      ),
-                                    );
-                                  } else if (material['materialType'] ==
-                                          'assessment' &&
-                                      !isLocked) {
-                                    String assessmentId = material?['id'] ??
-                                        ''; // Get the assessment ID
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => AssessmentScreen(
-                                          assessmentId: assessmentId,
+                                return ListTile(
+                                  leading: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      if (isLocked)
+                                        Icon(Icons.lock, color: Colors.red),
+                                      Icon(getIconForMaterial(
+                                          material['materialType'])),
+                                    ],
+                                  ),
+                                  title: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(title),
+                                      if (isCompleted)
+                                        Icon(Icons.check, color: Colors.green),
+                                    ],
+                                  ),
+                                  subtitle: isLocked
+                                      ? Text('Locked',
+                                          style: TextStyle(color: Colors.red))
+                                      : null,
+                                  onTap: () {
+                                    if (material['materialType'] == 'video' &&
+                                        !isLocked) {
+                                      String videoId = material?['id'] ??
+                                          ''; // Get the video ID
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              VideoDetailScreen(
+                                                  videoId: videoId),
                                         ),
-                                      ),
-                                    );
-                                  }
-                                },
-                              );
-                            },
-                          ),
-                        ],
-                      );
-                    },
+                                      );
+                                    } else if (material['materialType'] ==
+                                            'file' &&
+                                        !isLocked) {
+                                      String fileId = material?['id'] ??
+                                          ''; // Get the file ID
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              FileDetailScreen(fileId: fileId),
+                                        ),
+                                      );
+                                    } else if (material['materialType'] ==
+                                            'link' &&
+                                        !isLocked) {
+                                      String linkId = material?['id'] ??
+                                          ''; // Get the link ID
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => LinkScreen(
+                                              materialId:
+                                                  linkId), // Navigate to LinkScreen
+                                        ),
+                                      );
+                                    } else if (material['materialType'] ==
+                                            'assessment' &&
+                                        !isLocked) {
+                                      String assessmentId = material?['id'] ??
+                                          ''; // Get the assessment ID
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              AssessmentScreen(
+                                            assessmentId: assessmentId,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                   ),
       ),
     );

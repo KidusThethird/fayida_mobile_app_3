@@ -107,13 +107,16 @@ class _CoursesScreenState extends State<CoursesScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: tabController,
-        children: [
-          Center(child: _inProgressCourses()),
-          Center(child: _completedCourses()),
-          //  Center(child: _packagesSection()),
-        ],
+      body: RefreshIndicator(
+        onRefresh: fetchCourses,
+        child: TabBarView(
+          controller: tabController,
+          children: [
+            Center(child: _inProgressCourses()),
+            Center(child: _completedCourses()),
+            //  Center(child: _packagesSection()),
+          ],
+        ),
       ),
     );
   }
