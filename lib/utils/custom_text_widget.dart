@@ -134,6 +134,22 @@ class CustomTextWidget extends StatelessWidget {
       startIndex = match.end;
     }
 
+    // for (final match in underlineRegExp.allMatches(inputText)) {
+    //   // Add the text before the match
+    //   if (match.start > startIndex) {
+    //     addTextSpan(inputText.substring(startIndex, match.start), TextStyle());
+    //   }
+
+    //   // Add the underlined text
+    //   addTextSpan(
+    //     match.group(1)!,
+    //     TextStyle(decoration: TextDecoration.underline),
+    //   );
+
+    //   // Update the start index for the next segment
+    //   startIndex = match.end;
+    // }
+
     inputText = inputText.replaceAll(underlineRegExp, '');
 
     // Handle symbols and other patterns

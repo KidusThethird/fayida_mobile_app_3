@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/custom_text_widget.dart';
+import '../utils/custom_text_2.dart';
+import '../utils/imageloader.dart';
 import 'correction_screen.dart';
 
 class ExamScreen extends StatefulWidget {
@@ -251,7 +253,7 @@ class _ExamScreenState extends State<ExamScreen> {
                         ),
                         SizedBox(height: 10),
                         Text(
-                          'Number of Questions: $questionCount ${widget.examId}',
+                          'Number of Questions: $questionCount',
                           style: TextStyle(fontSize: 16),
                         ),
                         Text(
@@ -288,12 +290,51 @@ class _ExamScreenState extends State<ExamScreen> {
   }
 }
 
+// class Question {
+//   final String questionText;
+//   final String choicea;
+//   final String choiceb;
+//   final String choicec;
+//   final String choiced;
+//   final List<String> choiceContent;
+//   final List<String> choices;
+
+//   Question({
+//     required this.questionText,
+//     required this.choices,
+//     required this.choicea,
+//     required this.choiceb,
+//     required this.choicec,
+//     required this.choiced,
+//     required this.choiceContent,
+//   });
+
+//   factory Question.fromJson(Map<String, dynamic> json) {
+//     return Question(
+//       questionText: json['question'] as String,
+//       choicea: json['choiceA'] as String,
+//       choiceb: json['choiceB'] as String,
+//       choicec: json['choiceC'] as String,
+//       choiced: json['choiceD'] as String,
+//       choiceContent: [
+//         json['choiceA'] as String,
+//         json['choiceB'] as String,
+//         json['choiceC'] as String,
+//         json['choiceD'] as String,
+//       ],
+//       choices: ['a', 'b', 'c', 'd'],
+//     );
+//   }
+// }
+
 class Question {
   final String questionText;
   final String choicea;
   final String choiceb;
   final String choicec;
   final String choiced;
+  final String questionImage;
+  final String correctionImage;
   final List<String> choiceContent;
   final List<String> choices;
 
@@ -305,15 +346,21 @@ class Question {
     required this.choicec,
     required this.choiced,
     required this.choiceContent,
+    required this.questionImage,
+    required this.correctionImage,
   });
 
   factory Question.fromJson(Map<String, dynamic> json) {
     return Question(
-      questionText: json['question'],
+      questionText: json['question'] as String,
       choicea: json['choiseA'],
       choiceb: json['choiseB'],
       choicec: json['choiseC'],
-      choiced: json['choiseD'],
+      correctionImage: json['correctionImageUrl'],
+
+      questionImage: json['questionImageUrl'],
+      choiced: json['choiseC'],
+
       choiceContent: [
         json['choiseA'],
         json['choiseB'],
@@ -368,10 +415,18 @@ class _QuestionWidgetState extends State<QuestionWidget> {
             //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             // ),
 
-            CustomTextWidget(
+            // CustomTextWidget(
+            //   text:
+            //       ' Q${widget.questionNumber}: ${widget.question.questionText}',
+            // ),
+
+            FilteredText(
               text:
-                  ' Q${widget.questionNumber}: ${widget.question.questionText}',
+                  "Q${widget.questionNumber}: ${widget.question.questionText}",
+              style: TextStyle(fontSize: 20, color: Colors.black),
             ),
+
+            NetworkImageSection(imageUrl: widget.question.questionImage),
 
             SizedBox(height: 8.0),
             ...List.generate(widget.question.choices.length, (index) {
@@ -400,12 +455,14 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                       },
                     ),
 
-                    CustomTextWidget(
-                      text: ' $choiceLetter : $choiceText',
-                      baseStyle: TextStyle(
-                        color: isSelected ? Colors.green : Colors.black,
+                    Expanded(
+                      child: CustomTextWidget(
+                        text: '$choiceLetter : $choiceText',
+                        baseStyle: TextStyle(
+                          color: isSelected ? Colors.green : Colors.black,
+                        ),
                       ),
-                    ),
+                    )
 
                     // Text(
                     //   '$choiceLetter : $choiceText',
