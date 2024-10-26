@@ -20,8 +20,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
   }
 
   Future<void> fetchPackages() async {
-    final response = await http.get(
-        Uri.parse('https://api.fayidaacademy.com/packages/fetchPackagesall'));
+    final response = await http
+        .get(Uri.parse('https://api.fayidaacademy.com/packages/featured'));
     if (response.statusCode == 200) {
       setState(() {
         allPackages = json.decode(response.body);

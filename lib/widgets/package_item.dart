@@ -146,11 +146,12 @@ class PackageItem extends StatelessWidget {
         const SizedBox(
           width: 12,
         ),
-        _getAttribute(
-          Icons.star,
-          AppColor.yellow,
-          data!.courses!.length!.toString(),
-        ),
+        Text(data!.courses!.length!.toString() + " Courses"),
+        // _getAttribute(
+        //   Icons.star,
+        //   AppColor.yellow,
+        //   data!.courses!.length!.toString(),
+        // ),
       ],
     );
   }

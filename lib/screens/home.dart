@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:online_course/screens/prizeslist.dart';
 import 'package:online_course/theme/color.dart';
 import 'package:online_course/utils/data.dart';
+import 'package:url_launcher/url_launcher.dart';
 //import 'package:online_course/utils/fetch_package_model.dart';
 import 'dart:convert';
 
@@ -22,7 +23,9 @@ import '../widgets/blog_item.dart';
 import '../services/packageList_services.dart';
 import '../widgets/drawer.dart';
 import '../widgets/package_item.dart';
+import 'account.dart';
 import 'explore.dart';
+import 'filter_package.dart';
 import 'leader_board.dart';
 import 'dart:async';
 
@@ -34,9 +37,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // New state variable to toggle visibility of the new widget
+  bool _isNewWidgetVisible = false;
+
   Future getPackageList() async {
-    var response = await http
-        .get(Uri.https('api.fayidaacademy.com', 'packages/fetchPackagesall'));
+    var response =
+        await http.get(Uri.https('api.fayidaacademy.com', 'packages/featured'));
     var jsonData = jsonDecode(response.body);
     print("response.body");
   }
@@ -61,6 +67,20 @@ class _HomePageState extends State<HomePage> {
     _pageController = PageController();
     _startAutoSlide();
     getPackageList(); // Call this in initState to load data when the widget is created
+  }
+
+  void _launchUrl(String url) async {
+    if (!await launchUrl(Uri.parse(url))) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
+  bool _isAcademicSubMenuVisible = false;
+
+  void _toggleAcademicSubMenu() {
+    setState(() {
+      _isAcademicSubMenuVisible = !_isAcademicSubMenuVisible;
+    });
   }
 
   void _startAutoSlide() {
@@ -103,38 +123,253 @@ class _HomePageState extends State<HomePage> {
               (context, index) => _buildBody(),
               childCount: 1,
             ),
-          )
+          ),
+          // If the new widget is visible, add it here
+          //  if (_isNewWidgetVisible) SliverToBoxAdapter(child: _buildNewWidget()),
+        ],
+      ),
+      drawer: _buildDrawer(),
+    );
+  }
+
+  // New widget that appears below the AppBar
+  Widget _buildNewWidget() {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(16),
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Menu',
+            style: TextStyle(fontSize: 24, color: Colors.black),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: 10),
+
+          // Academic menu item with toggle
+          ListTile(
+            title: Text('Academic', style: TextStyle(color: Colors.black)),
+            onTap: _toggleAcademicSubMenu,
+          ),
+
+          // Academic submenu items
+          if (_isAcademicSubMenuVisible)
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0),
+              child: Column(
+                children: [
+                  ListTile(
+                    title:
+                        Text('Grade 9', style: TextStyle(color: Colors.black)),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                PackageScreen(filterKeyExtracted: 'Grade 9')),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    title:
+                        Text('Grade 10', style: TextStyle(color: Colors.black)),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                PackageScreen(filterKeyExtracted: 'Grade 10')),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    title:
+                        Text('Grade 11', style: TextStyle(color: Colors.black)),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                PackageScreen(filterKeyExtracted: 'Grade 11')),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    title:
+                        Text('Grade 12', style: TextStyle(color: Colors.black)),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                PackageScreen(filterKeyExtracted: 'Grade 12')),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    title:
+                        Text('Others', style: TextStyle(color: Colors.black)),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                PackageScreen(filterKeyExtracted: 'Other')),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+          // Other menu items
+          ListTile(
+            title:
+                Text('Search Package', style: TextStyle(color: Colors.black)),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ExploreScreen()),
+              );
+            },
+          ),
+          ListTile(
+            title: Text('Prizes', style: TextStyle(color: Colors.black)),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PrizesScreen()),
+              );
+            },
+          ),
+          ListTile(
+            title: Text('LeaderBoard', style: TextStyle(color: Colors.black)),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LeaderBoardScreen()),
+              );
+            },
+          ),
+          ListTile(
+            title: Text('Telegram Bot', style: TextStyle(color: Colors.black)),
+            onTap: () {
+              _launchUrl('https://t.me/fayidaacademy_bot');
+            },
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildAppBar() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Container(
-          child: Image.asset(
-            'assets/images/smalllogo.png',
-            width: 100,
-            height: 50,
-            fit: BoxFit.cover,
-          ),
+  Widget _buildDrawer() {
+    return Drawer(
+      child: Container(
+        color: Colors.green[700],
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              child: Text(
+                'Navigation Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+              decoration: BoxDecoration(
+                color: Colors.green[800],
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.home, color: Colors.white),
+              title: Text('Home', style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(context); // Close the drawer
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.explore, color: Colors.white),
+              title: Text('Explore', style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ExploreScreen()),
+                );
+                Navigator.pop(context); // Close the drawer
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.star, color: Colors.white),
+              title: Text('Prizes', style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PrizesScreen()),
+                );
+                Navigator.pop(context); // Close the drawer
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.leaderboard, color: Colors.white),
+              title: Text('Leaderboard', style: TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LeaderBoardScreen()),
+                );
+                Navigator.pop(context); // Close the drawer
+              },
+            ),
+          ],
         ),
-        GestureDetector(
-          onTap: () {
-            // Add your menu bar icon functionality here
-            print('Menu bar icon tapped');
-          },
-          child: Container(
-            padding: const EdgeInsets.all(8.0),
-            // child: Icon(
-            //   Icons.menu,
-            //   color: AppColor.textColor,
-            // ),
+      ),
+    );
+  }
+
+  Widget _buildAppBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Logo on the left
+          Container(
+            child: Image.asset(
+              'assets/images/smalllogo.png',
+              width: 100,
+              height: 50,
+              fit: BoxFit.cover,
+            ),
           ),
-        )
-      ],
+          // Menu icon on the right
+          GestureDetector(
+            onTap: () {
+              // Open the drawer when the menu icon is tapped
+              Scaffold.of(context).openDrawer();
+              // Toggle the visibility of the new widget
+              setState(() {
+                _isNewWidgetVisible = !_isNewWidgetVisible;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white
+                    .withOpacity(0.2), // Semi-transparent background
+              ),
+              child: Icon(
+                Icons.menu,
+                color: Colors.green, // Menu icon color
+                size: 30, // Icon size
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -144,6 +379,7 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (_isNewWidgetVisible) (_buildNewWidget()),
           _buildScrollingImage(),
           _buildCategories(),
           const SizedBox(
@@ -176,10 +412,6 @@ class _HomePageState extends State<HomePage> {
                       fontWeight: FontWeight.w600,
                       color: AppColor.textColor),
                 ),
-                // Text(
-                //   "See all",
-                //   style: TextStyle(fontSize: 14, color: AppColor.darker),
-                // ),
               ],
             ),
           ),
@@ -237,7 +469,7 @@ class _HomePageState extends State<HomePage> {
                 foregroundColor: Colors.black,
               ),
               child: Text(
-                'Prize',
+                'Prizes',
                 style: TextStyle(color: Color.fromARGB(255, 7, 49, 9)),
               ),
             ),
@@ -350,21 +582,5 @@ class _HomePageState extends State<HomePage> {
             return Center(child: CircularProgressIndicator());
           }
         });
-
-    // return SingleChildScrollView(
-    //   padding: EdgeInsets.fromLTRB(15, 5, 0, 5),
-    //   scrollDirection: Axis.horizontal,
-    //   child: Row(
-    //     children: List.generate(
-    //       recommends.length,
-    //       (index) => Padding(
-    //         padding: const EdgeInsets.only(right: 10),
-    //         child: RecommendItem(
-    //           data: recommends[index],
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 }

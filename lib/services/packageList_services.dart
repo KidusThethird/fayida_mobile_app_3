@@ -12,7 +12,7 @@ class PackageListServices {
 
     try {
       var response =
-          await http.get(Uri.parse(baseUrl + 'packages/fetchPackagesall'));
+          await http.get(Uri.parse(baseUrl + 'packages/featured'));
       if (response.statusCode == 200) {
         var data = response.body;
         var decodedData = jsonDecode(data);
