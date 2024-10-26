@@ -419,10 +419,11 @@ class _QuestionWidgetState extends State<QuestionWidget> {
             //   text:
             //       ' Q${widget.questionNumber}: ${widget.question.questionText}',
             // ),
+//This is an example of a **bold** text. Here is an _underlined_ segment, and here is some *italic* text. Let's include some superscript like x^2^ and some subscript like H***2***O. Also, we can use special characters: &&8 for infinity, &&pi for π, and &&noteq for ≠. For example, the limit as n approaches infinity is expressed as lim_{n->&&8} f(n) ≠ 0. You can also represent mathematical symbols like &&alpha for α, &&beta for β, and &&integral for ∫. Remember to add new lines using &&nl to separate sections: This is the first line.&&nl This is the second line. And here's a long dash: &&dashl. Lastly, we can represent real numbers as &&r and natural numbers as &&nat.
 
             FilteredText(
               text:
-                  "Q${widget.questionNumber}: ${widget.question.questionText}",
+                  ' Q${widget.questionNumber}: ${widget.question.questionText}',
               style: TextStyle(fontSize: 20, color: Colors.black),
             ),
 

@@ -8,6 +8,8 @@ class FilteredText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String processedText = _replaceSpecialCharacters(text);
+
     // Updated regular expression to include italic (*), superscript (^), and subscript (***)
     RegExp regExp =
         RegExp(r'(_.*?_|\*\*\*.*?\*\*\*|\*\*.*?\*\*|\*.*?\*|\^.*?\^)');
@@ -16,11 +18,11 @@ class FilteredText extends StatelessWidget {
     int start = 0;
 
     // Process each match to apply the appropriate style
-    regExp.allMatches(text).forEach((match) {
+    regExp.allMatches(processedText).forEach((match) {
       if (start < match.start) {
         // Add any text before the match as normal text
-        spans.add(
-            TextSpan(text: text.substring(start, match.start), style: style));
+        spans.add(TextSpan(
+            text: processedText.substring(start, match.start), style: style));
       }
 
       String matchText = match.group(0)!;
@@ -94,8 +96,8 @@ class FilteredText extends StatelessWidget {
     });
 
     // Add remaining text after the last match
-    if (start < text.length) {
-      spans.add(TextSpan(text: text.substring(start), style: style));
+    if (start < processedText.length) {
+      spans.add(TextSpan(text: processedText.substring(start), style: style));
     }
 
     return RichText(
@@ -104,5 +106,51 @@ class FilteredText extends StatelessWidget {
         style: style,
       ),
     );
+  }
+
+  String _replaceSpecialCharacters(String input) {
+    // Handle long dash replacement first
+    input = input.replaceAll(
+        '&&dashl', '————————————————'); // Long dash (multiple dashes)
+
+    // Then handle single dash replacement
+    input = input.replaceAll('&&dash', '—————'); // Single dash (em dash)
+
+    return input
+        .replaceAll('&&8', '∞') // Infinity
+        .replaceAll('&&f', 'ƒ') // Function f
+        .replaceAll('&&arf', '→') // Right arrow
+        .replaceAll('&&arb', '←') // Left arrow
+        .replaceAll('&&aru', '↑') // Up arrow
+        .replaceAll('&&ard', '↓') // Down arrow
+        .replaceAll('&&pi', 'π') // Pi
+        .replaceAll('&&sqrt', '√') // Square root
+        .replaceAll('&&noteq', '≠') // Not equal
+        .replaceAll('&&empty', '∅') // Empty set
+        .replaceAll('&&integ', '∫') // Integral
+        .replaceAll('&&triangle', '△') // Triangle
+        .replaceAll('&&imp', '⇒') // Implication
+        .replaceAll('&&bimp', '⇔') // Bi-implication
+        .replaceAll('&&invv', '∧') // Logical and
+        .replaceAll('&&alpha', 'α') // Alpha
+        .replaceAll('&&beta', 'β') // Beta
+        .replaceAll('&&theta', 'θ') // Theta
+        .replaceAll('&&gamma', 'γ') // Gamma
+        .replaceAll('&&lambda', 'λ') // Lambda
+        .replaceAll('&&mu', 'μ') // Mu
+        .replaceAll('&&nu', 'ν') // Nu
+        .replaceAll('&&rho', 'ρ') // Rho
+        .replaceAll('&&tau', 'τ') // Tau
+        .replaceAll('&&phi', 'φ') // Phi
+        .replaceAll('&&psi', 'ψ') // Psi
+        .replaceAll('&&omega', 'ω') // Omega
+        .replaceAll('&&eta', 'η') // Eta
+        .replaceAll('&&dotdotdot', '⋮') // Dots
+        .replaceAll('&&greaterequal', '≥') // Greater than or equal to
+        .replaceAll('&&lessequal', '≤') // Less than or equal to
+        .replaceAll('&&plusminus', '±') // Plus-minus
+        .replaceAll('&&nl', '\n') // New line
+        .replaceAll('&&r', 'ℝ') // Real numbers (styled)
+        .replaceAll('&&nat', 'ℕ'); // Natural numbers (styled)
   }
 }
