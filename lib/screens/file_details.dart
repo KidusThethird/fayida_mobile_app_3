@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart'; // Add this import
+import 'package:url_launcher/url_launcher.dart';
+
+import '../widgets/mybutton.dart'; // Add this import
 
 class FileDetailScreen extends StatefulWidget {
   final String fileId;
@@ -112,6 +114,12 @@ class _FileDetailScreenState extends State<FileDetailScreen> {
                         onPressed: _launchPDF,
                         child: Text('View PDF'),
                       ),
+                      (1 == 1)
+                          ? MyCustomButton(
+                              materialId: widget.fileId,
+                            )
+                          : Text("Seen"),
+                      SizedBox(height: 10.0),
                     ],
                   ),
                 ),

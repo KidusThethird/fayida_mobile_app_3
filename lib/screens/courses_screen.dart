@@ -155,151 +155,219 @@ class _CoursesScreenState extends State<CoursesScreen>
               int totalMaterials =
                   getTotalMaterials(mainData[index]['Courses']['materials']);
 
-              var progressValue =
+              double progressValue =
                   calculateProgressValue(completedMaterials, totalMaterials);
-              // return ListTile(
-              //   title: Text(mainData[index]['Courses']['courseName']),
-              // );
-              //  var x = (mainData[index].Courses?.materials?.isNotEmpty == true
-              //    ? " Yes"
-              //   : "No");
 
-              // (mainData[index].Courses?.materials?.isNotEmpty == true
-
-              //     ? (mainData[index].Courses!.materials.where((material) {
-              //           return material.StudentMaterial.any((item) =>
-              //               item.StudentId == mainData[index].studentsId &&
-              //               item.Done == true);
-              //         }).length /
-              //         mainData[index].Courses!.materials.length)
-              //     : 0);
+              bool completed = progressValue == 100.0;
+              String x = progressValue.toString();
               Map<String, dynamic> courseData =
                   mainData[index]['Courses'] ?? {};
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CourseMaterialsScreen(
-                        id: mainData[index]['coursesId'],
-                        // courseData: courseData
-                      ), // Corrected line
+
+              print("This is everything :" + progressValue.toString());
+
+              print("Completed is : " + completed.toString());
+              if (!completed) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CourseMaterialsScreen(
+                          id: mainData[index]['coursesId'],
+                          // courseData: courseData
+                        ), // Corrected line
+                      ),
+                    );
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(right: 10),
+                    padding: EdgeInsets.all(10),
+                    width: 300,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.1),
+                          spreadRadius: 1,
+                          blurRadius: 1,
+                          offset: Offset(1, 1), // changes position of shadow
+                        ),
+                      ],
                     ),
-                  );
-                },
-                child: Container(
-                  margin: EdgeInsets.only(right: 10),
-                  padding: EdgeInsets.all(10),
-                  width: 300,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        spreadRadius: 1,
-                        blurRadius: 1,
-                        offset: Offset(1, 1), // changes position of shadow
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      CustomImage(
-                        mainData[index]['packageImgUrl'][0],
-                        radius: 15,
-                        height: 80,
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            mainData[index]['Courses']['courseName'].length > 15
-                                ? mainData[index]['Courses']['courseName']
-                                        .substring(0, 15) +
-                                    '...'
-                                : mainData[index]['Courses']['courseName'],
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: AppColor.textColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                    child: Row(
+                      children: [
+                        CustomImage(
+                          mainData[index]['packageImgUrl'][0],
+                          radius: 15,
+                          height: 80,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              mainData[index]['Courses']['courseName'].length >
+                                      15
+                                  ? mainData[index]['Courses']['courseName']
+                                          .substring(0, 15) +
+                                      '...'
+                                  : mainData[index]['Courses']['courseName'],
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: AppColor.textColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-
-                          Text(progressValue.toString() + " %"),
-                          // Text(mainData[index]['Courses']['materials']
-                          //             .isNotEmpty ==
-                          //         true
-                          //     ? (mainData[index]['Courses']['materials']
-                          //             .where((material) {
-                          //           return material['StudentMaterial'].any(
-                          //               (item) =>
-                          //                   item['StudentId'] ==
-                          //                       mainData[index]['studentsId'] &&
-                          //                   item['Done'] == true);
-                          //         }).length /
-                          //         mainData[index]['Courses']['materials'].length)
-                          //     : "0"),
-
-                          // LinearProgressIndicator(
-                          //   value: 50,
-                          // ),
-                          // GFProgressBar(
-                          //     percentage: 50,
-                          // percentage: (mainData[index]
-                          //             .Courses
-                          //             ?.materials
-                          //             ?.isNotEmpty ==
-                          //         true
-                          //     ? (mainData[index]
-                          //             .Courses!
-                          //             .materials
-                          //             .where((material) {
-                          //           return material.StudentMaterial.any(
-                          //               (item) =>
-                          //                   item.StudentId ==
-                          //                       mainData[index].studentsId &&
-                          //                   item.Done == true);
-                          //         }).length /
-                          //         mainData[index].Courses!.materials.length)
-                          //     : 0),
-                          // backgroundColor: Colors.black26,
-                          // progressBarColor: GFColors.DANGER),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          //_buildDurationAndRate()
-                        ],
-                      ),
-                    ],
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(progressValue.toString() + " %"),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            //_buildDurationAndRate()
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-          )
+                );
+              } else {
+                return Text("");
+              }
+            })
         : Center(child: Text('No data available'));
   }
 
   Widget _completedCourses() {
-    return ListView.builder(
-      itemCount: completedCourses.length,
-      itemBuilder: (context, index) {
-        final course = completedCourses[index];
-        return ListTile(
-          title: Text(course['title'] ?? 'Unknown course'),
-          subtitle: Text(
-              'Course ID: ${course['coursesId']}, Student ID: ${course['studentsId']}'),
-        );
-      },
-    );
+    return mainData.isNotEmpty
+        ? ListView.builder(
+            itemCount: mainData.length,
+            itemBuilder: (context, index) {
+              int getCompletedMaterials(
+                  List<dynamic> materials, String studentId) {
+                return materials
+                    .where((material) =>
+                        material['StudentMaterial']?.any((item) =>
+                            item['StudentId'] == studentId &&
+                            item['Done'] == true) ??
+                        false)
+                    .length;
+              }
+
+              int getTotalMaterials(List<dynamic>? materials) {
+                return materials?.length ?? 0;
+              }
+
+              double calculateProgressValue(
+                  int completedMaterials, int totalMaterials) {
+                return totalMaterials > 0
+
+                    //Todo: fix here needed. the completedMaterials might need to be subtracted by one
+                    ? double.parse(((completedMaterials) * 100 / totalMaterials)
+                        .toStringAsFixed(1))
+                    : 0;
+              }
+
+              int completedMaterials = getCompletedMaterials(
+                  mainData[index]['Courses']['materials'] ?? [],
+                  mainData[index]['studentsId']);
+
+              int totalMaterials =
+                  getTotalMaterials(mainData[index]['Courses']['materials']);
+
+              double progressValue =
+                  calculateProgressValue(completedMaterials, totalMaterials);
+
+              bool completed = progressValue == 100.0;
+              String x = progressValue.toString();
+              Map<String, dynamic> courseData =
+                  mainData[index]['Courses'] ?? {};
+
+              print("This is everything :" + progressValue.toString());
+
+              print("Completed is : " + completed.toString());
+              if (completed) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CourseMaterialsScreen(
+                          id: mainData[index]['coursesId'],
+                          // courseData: courseData
+                        ), // Corrected line
+                      ),
+                    );
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(right: 10),
+                    padding: EdgeInsets.all(10),
+                    width: 300,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.1),
+                          spreadRadius: 1,
+                          blurRadius: 1,
+                          offset: Offset(1, 1), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        CustomImage(
+                          mainData[index]['packageImgUrl'][0],
+                          radius: 15,
+                          height: 80,
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              mainData[index]['Courses']['courseName'].length >
+                                      15
+                                  ? mainData[index]['Courses']['courseName']
+                                          .substring(0, 15) +
+                                      '...'
+                                  : mainData[index]['Courses']['courseName'],
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: AppColor.textColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(progressValue.toString() + " %"),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            //_buildDurationAndRate()
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              } else {
+                return Text("");
+              }
+            })
+        : Center(child: Text('No data available'));
   }
 
   // Widget _packagesSection() {

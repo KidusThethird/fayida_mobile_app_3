@@ -4,6 +4,8 @@ import 'package:video_player/video_player.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../widgets/mybutton.dart';
+
 class VideoDetailScreen extends StatefulWidget {
   final String videoId;
 
@@ -20,6 +22,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   String videoDescription = 'Loading...';
   String message = '';
   bool isLoading = true;
+  bool isMaterialDone = false;
 
   @override
   void initState() {
@@ -32,6 +35,9 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     final String? cookieString = prefs.getString('cookies');
 
     if (cookieString != null) {
+      // Print all cookie information
+      print("Cookies: $cookieString");
+
       final Dio dio = Dio();
       dio.options.headers['Cookie'] = cookieString;
 
@@ -42,6 +48,13 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
         if (response.statusCode == 200) {
           setState(() {
             var videoData = response.data;
+
+            // Uncomment and complete the logic for checking material completion
+            // String studentId = _extractStudentIdFromCookies(cookieString);
+            // isMaterialDone = videoData['StudentMaterial']?.any((item) =>
+            //     item['StudentId'] == studentId &&
+            //     item['Done'] == true) ??
+            //     false;
 
             if (videoData is Map<String, dynamic>) {
               if (videoData['videoUrl'] is List) {
@@ -95,6 +108,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("------------------This needs to be printed: " + widget.videoId);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Video Details'),
@@ -119,7 +134,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                         ),
                       ),
                       SizedBox(
-                          height: 50.0), // Additional space above the text area
+                          height: 20.0), // Additional space above the text area
                       Padding(
                         padding: const EdgeInsets.only(
                             left: 16.0,
@@ -128,6 +143,12 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            (1 == 1)
+                                ? MyCustomButton(
+                                    materialId: widget.videoId,
+                                  )
+                                : Text("Seen"),
+                            SizedBox(height: 10.0),
                             Text(
                               videoTitle,
                               style: TextStyle(

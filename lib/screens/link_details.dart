@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../widgets/mybutton.dart';
+
 class LinkScreen extends StatefulWidget {
   final String materialId;
 
@@ -112,6 +114,12 @@ class _LinkScreenState extends State<LinkScreen> {
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                           )),
+                      (1 == 1)
+                          ? MyCustomButton(
+                              materialId: widget.materialId,
+                            )
+                          : Text("Seen"),
+                      SizedBox(height: 10.0),
                     ],
                   ),
                 ),

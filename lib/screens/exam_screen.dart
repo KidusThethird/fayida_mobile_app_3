@@ -146,6 +146,13 @@ class _ExamScreenState extends State<ExamScreen> {
         data: postData,
       );
 
+      // final String apiUrl =
+      //     'https://api.fayidaacademy.com/studentmaterial/'; // Replace with your actual API URL
+      // final postData2 = {
+      //   'MaterialId': widget.examId, // Set the MaterialId from the parameter
+      // };
+      // final response2 = await dio.post(apiUrl, data: postData2);
+
       if (response.statusCode == 200) {
         final responseData = response.data;
         showDialog(

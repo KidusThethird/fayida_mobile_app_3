@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../widgets/mybutton.dart';
 import 'exam_screen.dart'; // Make sure to import your ExamScreen here
 
 class AssessmentScreen extends StatefulWidget {
@@ -121,7 +122,9 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 20), // Add spacing for button
+                      SizedBox(height: 20),
+
+                      // Add spacing for button
                       ElevatedButton(
                           onPressed: _takeExam, // Call the function on pressed
                           child: Text('Take Exam'),
@@ -133,6 +136,10 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                           )),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      MyCustomButton(materialId: widget.assessmentId),
                     ],
                   ),
                 ),
