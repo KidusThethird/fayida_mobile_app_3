@@ -4,7 +4,9 @@ class FilteredText extends StatelessWidget {
   final String text;
   final TextStyle? style;
 
-  FilteredText({required this.text, this.style});
+  FilteredText({required this.text, TextStyle? style})
+      : this.style =
+            style ?? const TextStyle(color: Colors.black, fontSize: 18);
 
   @override
   Widget build(BuildContext context) {

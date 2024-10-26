@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../utils/custom_text_2.dart';
 import '../utils/custom_text_widget.dart';
 import '../utils/imageloader.dart';
 
@@ -98,43 +99,43 @@ class _ExamDetailsScreenState extends State<CorrectionScreen> {
                           //   style: TextStyle(
                           //       fontSize: 18, fontWeight: FontWeight.bold),
                           // ),
-                          CustomTextWidget(
+                          FilteredText(
                             text:
                                 'Q${question['questionIndex']}: ${question['question']}',
-                            baseStyle: TextStyle(
+                            style: TextStyle(
                                 fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey),
+                                //fontWeight: FontWeight.bold,
+                                color: Colors.black),
                           ),
                           SizedBox(height: 10),
                           //  Text('A: ${question['choiseA']}'),
-                          CustomTextWidget(
+                          FilteredText(
                             text: 'A: ${question['choiseA']}',
-                            baseStyle: TextStyle(
+                            style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey),
                           ),
                           //Text('B: ${question['choiseB']}'),
-                          CustomTextWidget(
+                          FilteredText(
                             text: 'B: ${question['choiseB']}',
-                            baseStyle: TextStyle(
+                            style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey),
                           ),
                           //Text('C: ${question['choiseC']}'),
-                          CustomTextWidget(
+                          FilteredText(
                             text: 'C: ${question['choiseC']}',
-                            baseStyle: TextStyle(
+                            style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey),
                           ),
                           //Text('D: ${question['choiseD']}'),
-                          CustomTextWidget(
+                          FilteredText(
                             text: 'D: ${question['choiseD']}',
-                            baseStyle: TextStyle(
+                            style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey),
@@ -152,9 +153,9 @@ class _ExamDetailsScreenState extends State<CorrectionScreen> {
                           //       color: const Color.fromARGB(255, 25, 37, 26)),
                           // ),
 
-                          CustomTextWidget(
+                          FilteredText(
                             text: 'Exp: ${question['correction']}',
-                            baseStyle: TextStyle(
+                            style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey),

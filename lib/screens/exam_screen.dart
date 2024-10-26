@@ -424,7 +424,7 @@ class _QuestionWidgetState extends State<QuestionWidget> {
             FilteredText(
               text:
                   ' Q${widget.questionNumber}: ${widget.question.questionText}',
-              style: TextStyle(fontSize: 20, color: Colors.black),
+              // style: TextStyle(fontSize: 20, color: Colors.black),
             ),
 
             NetworkImageSection(imageUrl: widget.question.questionImage),
@@ -457,9 +457,9 @@ class _QuestionWidgetState extends State<QuestionWidget> {
                     ),
 
                     Expanded(
-                      child: CustomTextWidget(
+                      child: FilteredText(
                         text: '$choiceLetter : $choiceText',
-                        baseStyle: TextStyle(
+                        style: TextStyle(
                           color: isSelected ? Colors.green : Colors.black,
                         ),
                       ),
