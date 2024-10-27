@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../theme/color.dart';
+
 class MyCustomButton extends StatelessWidget {
   final String materialId;
 
@@ -70,7 +72,7 @@ class MyCustomButton extends StatelessWidget {
       },
       child: Text('Mark Done'),
       style: TextButton.styleFrom(
-        primary: Colors.blue, // Text color
+        primary: AppColor.primary, // Text color
         backgroundColor: Colors.white, // Button background color
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Padding
         textStyle: TextStyle(fontSize: 16), // Font size

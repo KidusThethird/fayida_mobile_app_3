@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../theme/color.dart';
 import '../utils/custom_text_widget.dart';
 import '../utils/custom_text_2.dart';
 import '../utils/imageloader.dart';
@@ -116,7 +117,7 @@ class _ExamScreenState extends State<ExamScreen> {
       if (selectedAnswers.contains(null)) {
         final snackBar = SnackBar(
           content: Text("Please answer all questions before submitting."),
-          backgroundColor: Colors.orange,
+          backgroundColor: AppColor.primary,
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         return;

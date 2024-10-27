@@ -23,11 +23,11 @@ class _RootAppState extends State<RootApp> with TickerProviderStateMixin {
       "active_icon": "assets/icons/home.svg",
       "page": HomePage(),
     },
-    {
-      "icon": "assets/icons/discover.svg",
-      "active_icon": "assets/icons/discover.svg",
-      "page": MockExamStart(),
-    },
+    // {
+    //   "icon": "assets/icons/discover.svg",
+    //   "active_icon": "assets/icons/discover.svg",
+    //   "page": MockExamStart(),
+    // },
     {
       "icon": "assets/icons/play.svg",
       "active_icon": "assets/icons/play.svg",

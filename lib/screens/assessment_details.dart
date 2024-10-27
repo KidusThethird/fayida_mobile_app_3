@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../theme/color.dart';
 import '../widgets/mybutton.dart';
 import 'exam_screen.dart'; // Make sure to import your ExamScreen here
 
@@ -86,6 +87,7 @@ class _AssessmentScreenState extends State<AssessmentScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Assessment Details'),
+        backgroundColor: AppColor.primary,
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())

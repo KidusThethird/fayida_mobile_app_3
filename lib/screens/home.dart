@@ -331,7 +331,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildAppBar() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -344,6 +344,7 @@ class _HomePageState extends State<HomePage> {
               fit: BoxFit.cover,
             ),
           ),
+
           // Menu icon on the right
           GestureDetector(
             onTap: () {
@@ -381,7 +382,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           if (_isNewWidgetVisible) (_buildNewWidget()),
           _buildScrollingImage(),
-          _buildCategories(),
+          // _buildCategories(),
           const SizedBox(
             height: 15,
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:online_course/theme/color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/custom_text_2.dart';
@@ -71,6 +72,7 @@ class _ExamDetailsScreenState extends State<CorrectionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Exam Details'),
+        backgroundColor: AppColor.primary,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

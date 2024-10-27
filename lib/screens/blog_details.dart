@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../theme/color.dart';
+
 class BlogDetailsScreen extends StatefulWidget {
   final String blogId;
   final String blogImage;
@@ -46,7 +48,7 @@ class _BlogDetailsScreenState extends State<BlogDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Blog Details'),
-        backgroundColor: Colors.green,
+        backgroundColor: AppColor.primary,
       ),
       body: SingleChildScrollView(
         child: Padding(

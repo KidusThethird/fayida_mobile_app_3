@@ -12,7 +12,7 @@
     </queries>
 
     <application
-        android:label="fayida_mobile_app_3"
+        android:label="Fayida Academy"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         

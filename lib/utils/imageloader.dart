@@ -25,7 +25,7 @@ class NetworkImageSection extends StatelessWidget {
         },
         errorBuilder:
             (BuildContext context, Object error, StackTrace? stackTrace) {
-          return Text('Failed to load image');
+          return Text('');
         },
       ),
     );
