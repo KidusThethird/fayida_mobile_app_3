@@ -35,11 +35,13 @@ class _ExamScreenState extends State<ExamScreen> {
 
   Future<void> fetchExamDetails() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? cookieString = prefs.getString('cookies');
+    // final String? cookieString = prefs.getString('cookies');
+    final String? authToken = prefs.getString('accessToken');
 
-    if (cookieString != null) {
+    if (authToken != null) {
       final Dio dio = Dio();
-      dio.options.headers['Cookie'] = cookieString;
+      // dio.options.headers['Cookie'] = cookieString;
+      dio.options.headers['Authorization'] = 'Bearer $authToken';
 
       try {
         final response = await dio.get(
@@ -101,9 +103,10 @@ class _ExamScreenState extends State<ExamScreen> {
   Future<void> submitAnswers(BuildContext context,
       {bool autoSubmit = false}) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? cookieString = prefs.getString('cookies');
+    //final String? cookieString = prefs.getString('cookies');
+    final String? authToken = prefs.getString('accessToken');
 
-    if (cookieString == null) {
+    if (authToken == null) {
       final snackBar = SnackBar(
         content: Text("No credentials found. Please log in again."),
         backgroundColor: Colors.red,
@@ -140,7 +143,9 @@ class _ExamScreenState extends State<ExamScreen> {
 
     try {
       final Dio dio = Dio();
-      dio.options.headers['Cookie'] = cookieString;
+      final String? authToken = prefs.getString('accessToken');
+      //   dio.options.headers['Cookie'] = cookieString;
+      dio.options.headers['Authorization'] = 'Bearer $authToken';
 
       final response = await dio.post(
         'https://api.fayidaacademy.com/assesments/submit-answers/${widget.examId}',

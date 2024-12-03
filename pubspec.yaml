@@ -13,6 +13,7 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.2
+  animate_do:
   flutter_svg: ^0.22.0
   #cached_network_image: ^3.1.0
   cached_network_image: 3.3.0

@@ -17,36 +17,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeCookies();
-  }
-
-  Future<void> _initializeCookies() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final cookieString = prefs.getString('cookies');
-    if (cookieString != null) {
-      // Adding cookies to Dio
-      _dio.options.headers['Cookie'] = cookieString;
-      // Fetch user profile data
-      await _fetchUserProfile();
-    }
+    _fetchUserProfile();
   }
 
   Future<void> _fetchUserProfile() async {
     try {
+      // Retrieve accessToken from SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final accessToken = prefs.getString('accessToken');
+
+      if (accessToken == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('No access token found. Please log in again.')),
+        );
+        return;
+      }
+
+      // Add the accessToken to the Authorization header
+      _dio.options.headers['Authorization'] = 'Bearer $accessToken';
+
+      // Perform GET request
       final response = await _dio.get(
-          'https://api.fayidaacademy.com/login_register/profile'); // Update with your endpoint
+        'https://api.fayidaacademy.com/newlogin/profile',
+      );
+
       if (response.statusCode == 200) {
         setState(() {
           myData = response.data;
-          _firstName = response.data[
-              'firstName']; // Adjust according to your API response structure
+          _firstName =
+              response.data['firstName']; // Adjust based on your API structure
         });
       } else {
-        // Handle error response
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content:
-                  Text('Failed to fetch profile: ${response.data['message']}')),
+            content:
+                Text('Failed to fetch profile: ${response.data['message']}'),
+          ),
         );
       }
     } catch (e) {
@@ -59,14 +66,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Profile")),
+      appBar: AppBar(title: const Text("Profile")),
       body: Center(
         child: _firstName != null
             ? Text(
                 'Hello, $_firstName!',
-                style: TextStyle(fontSize: 24),
+                style: const TextStyle(fontSize: 24),
               )
-            : CircularProgressIndicator(), // Show loading indicator until data is fetched
+            : const CircularProgressIndicator(), // Show loading indicator until data is fetched
       ),
     );
   }

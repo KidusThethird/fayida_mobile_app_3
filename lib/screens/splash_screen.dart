@@ -20,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    // Animation setup
+    // Set up the animation
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -28,12 +28,13 @@ class _SplashScreenState extends State<SplashScreen>
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
     _controller.forward();
 
-    // Navigate after the splash screen duration
+    // Check login and navigate after the splash screen duration
     Timer(const Duration(seconds: 2), () async {
       bool isLoggedIn = await checkLogin();
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-            builder: (context) => isLoggedIn ? RootApp() : LoginScreen()),
+          builder: (context) => isLoggedIn ? RootApp() : LoginScreen(),
+        ),
       );
     });
   }
@@ -44,24 +45,33 @@ class _SplashScreenState extends State<SplashScreen>
     super.dispose();
   }
 
+  // Function to check if the user is logged in
   Future<bool> checkLogin() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? cookieString = prefs.getString('cookies');
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? authToken =
+          prefs.getString('accessToken'); // Retrieve the token
 
-    if (cookieString != null) {
-      final Dio dio = Dio();
-      dio.options.headers['Cookie'] = cookieString;
+      if (authToken != null) {
+        final Dio dio = Dio();
+        dio.options.headers['Authorization'] =
+            'Bearer $authToken'; // Add Bearer token to headers
 
-      try {
-        final response = await dio
-            .get('https://api.fayidaacademy.com/login_register/profile');
+        // Perform GET request to fetch profile
+        final response =
+            await dio.get('https://api.fayidaacademy.com/newlogin/profile');
 
+        // Print response for debugging
+        print("Response data: ${response.data}");
+
+        // Check for the presence of 'id' in the response data
         if (response.statusCode == 200 && response.data['id'] != null) {
           return true; // User is logged in
         }
-      } catch (e) {
-        // Handle error if needed
       }
+    } catch (e) {
+      // Handle any errors during the request
+      print("Error checking login: $e");
     }
     return false; // User is not logged in
   }
@@ -74,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen>
         child: FadeTransition(
           opacity: _fadeAnimation,
           child: Image.asset(
-            'assets/images/icon.png', // Replace with your image path
+            'assets/images/icon.png', // Replace with your app logo
             width: 150,
             height: 150,
             fit: BoxFit.cover,

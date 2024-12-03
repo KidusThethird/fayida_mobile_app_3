@@ -10,18 +10,21 @@ class MyCustomButton extends StatelessWidget {
   MyCustomButton({required this.materialId});
 
   Future<void> _markAsDone(BuildContext context) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? cookieString = await _getCookie();
 
-    if (cookieString != null) {
+    final String? authToken = prefs.getString('accessToken');
+
+    if (authToken != null) {
       final Dio dio = Dio();
-      dio.options.headers['Cookie'] = cookieString;
+      final String? authToken = prefs.getString('accessToken');
 
       final String apiUrl =
           'https://api.fayidaacademy.com/studentmaterial/'; // Replace with your actual API URL
       final postData = {
         'MaterialId': materialId, // Set the MaterialId from the parameter
       };
-
+      dio.options.headers['Authorization'] = 'Bearer $authToken';
       try {
         final response = await dio.post(apiUrl, data: postData);
 
@@ -72,7 +75,7 @@ class MyCustomButton extends StatelessWidget {
       },
       child: Text('Mark Done'),
       style: TextButton.styleFrom(
-        primary: AppColor.primary, // Text color
+        // primary: AppColor.primary, // Text color
         backgroundColor: Colors.white, // Button background color
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Padding
         textStyle: TextStyle(fontSize: 16), // Font size

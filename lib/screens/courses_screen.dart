@@ -38,11 +38,12 @@ class _CoursesScreenState extends State<CoursesScreen>
 
   Future<void> fetchCourses() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? cookieString = prefs.getString('cookies');
+    // final String? cookieString = prefs.getString('cookies');
+    final String? authToken = prefs.getString('accessToken');
 
-    if (cookieString != null) {
+    if (authToken != null) {
       final Dio dio = Dio();
-      dio.options.headers['Cookie'] = cookieString;
+      dio.options.headers['Authorization'] = 'Bearer $authToken';
 
       try {
         final response = await dio.get(

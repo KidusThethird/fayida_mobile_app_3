@@ -23,10 +23,13 @@ class _PrizesScreenState extends State<PrizesScreen> {
 
   Future<void> _initializeCookies() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final cookieString = prefs.getString('cookies');
-    if (cookieString != null) {
+//    final cookieString = prefs.getString('cookies');
+    final String? authToken = prefs.getString('accessToken');
+
+    if (authToken != null) {
       // Adding cookies to Dio
-      _dio.options.headers['Cookie'] = cookieString;
+      //_dio.options.headers['Cookie'] = cookieString;
+      _dio.options.headers['Authorization'] = 'Bearer $authToken';
       // Fetch user profile data
       await _fetchUserProfile();
       // Fetch prizes data

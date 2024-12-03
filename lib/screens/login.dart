@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
-import 'package:cookie_jar/cookie_jar.dart';
-import 'package:online_course/screens/root_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:online_course/screens/profiletest.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:animate_do/animate_do.dart';
+import 'package:online_course/screens/root_app.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -18,13 +15,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final Dio _dio = Dio();
-  final CookieJar _cookieJar = CookieJar();
-
-  @override
-  void initState() {
-    super.initState();
-    _dio.interceptors.add(CookieManager(_cookieJar));
-  }
 
   Future<void> _login() async {
     final String email = _emailController.text.trim();
@@ -32,41 +22,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter both email and password')),
+        const SnackBar(content: Text('Please enter both email and password')),
       );
       return;
     }
 
     try {
       final response = await _dio.post(
-        'https://api.fayidaacademy.com/login_register/loginss',
+        'https://api.fayidaacademy.com/newlogin/login',
         data: {'email': email, 'password': password},
         options: Options(
           headers: {'Content-Type': 'application/json'},
-          followRedirects: false,
-          validateStatus: (status) {
-            return status! < 500;
-          },
+          validateStatus: (status) => status! < 500,
         ),
       );
 
-      if (response.statusCode == 200) {
-        // Save email in Shared Preferences
+      if (response.statusCode == 200 && response.data['accessToken'] != null) {
+        // Save accessToken in SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('email', email);
-
-        // Save cookies to Shared Preferences
-        final cookies = await _cookieJar
-            .loadForRequest(Uri.parse('https://api.fayidaacademy.com'));
-        final cookieString = cookies
-            .map((cookie) => '${cookie.name}=${cookie.value}')
-            .join('; ');
-        await prefs.setString('cookies', cookieString);
-
+        await prefs.setString('accessToken', response.data['accessToken']);
+        print("Logged in: " + response.data['accessToken']);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login successful')),
+          const SnackBar(content: Text('Login successful')),
         );
 
+        // Navigate to the next screen
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => RootApp()),
         );
@@ -82,121 +62,137 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _launchUrl(String url) async {
-    if (!await launchUrl(Uri.parse(url))) {
-      throw Exception('Could not launch $url');
-    }
+  Future<String?> _getAccessToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('accessToken');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            colors: [
-              Color.fromARGB(255, 10, 87, 29),
-              Color.fromARGB(255, 24, 95, 14),
-              Color.fromARGB(255, 31, 107, 21),
-            ],
-          ),
-        ),
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 80),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            Container(
+              height: 400,
+              decoration: BoxDecoration(
+                  image: const DecorationImage(
+                      image: AssetImage('assets/images/appbanner5.png'),
+                      fit: BoxFit.fill)),
+              child: Stack(
                 children: <Widget>[
-                  Text("Login",
-                      style: TextStyle(color: Colors.white, fontSize: 40)),
-                  SizedBox(height: 10),
-                  Text("Welcome Back",
-                      style: TextStyle(color: Colors.white, fontSize: 18)),
+                  Positioned(
+                    left: 30,
+                    width: 80,
+                    height: 200,
+                    child: FadeInUp(
+                        duration: const Duration(seconds: 1),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                  image:
+                                      AssetImage('assets/images/light-1.png'))),
+                        )),
+                  ),
+                  Positioned(
+                    left: 140,
+                    width: 80,
+                    height: 150,
+                    child: FadeInUp(
+                        duration: const Duration(milliseconds: 1200),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                  image:
+                                      AssetImage('assets/images/light-2.png'))),
+                        )),
+                  ),
+                  Positioned(
+                    right: 40,
+                    top: 40,
+                    width: 80,
+                    height: 150,
+                    child: FadeInUp(
+                        duration: const Duration(milliseconds: 1300),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                              image: DecorationImage(
+                                  image:
+                                      AssetImage('assets/images/clock.png'))),
+                        )),
+                  ),
                 ],
               ),
             ),
-            SizedBox(height: 20),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(60),
-                      topRight: Radius.circular(60),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(30),
-                    child: Column(
-                      children: <Widget>[
-                        SizedBox(height: 60),
-                        Container(
-                          decoration: BoxDecoration(
+            Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: Column(
+                children: <Widget>[
+                  FadeInUp(
+                      duration: const Duration(milliseconds: 1800),
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
+                            border: Border.all(
+                                color: const Color.fromRGBO(143, 251, 152, 1)),
+                            boxShadow: const [
                               BoxShadow(
-                                color: Color.fromRGBO(9, 73, 9, 0.294),
-                                blurRadius: 20,
-                                offset: Offset(0, 10),
-                              )
-                            ],
-                          ),
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
+                                  color: Color.fromRGBO(143, 148, 251, .2),
+                                  blurRadius: 20.0,
+                                  offset: Offset(0, 10))
+                            ]),
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: const BoxDecoration(
                                   border: Border(
-                                    bottom:
-                                        BorderSide(color: Colors.grey.shade200),
-                                  ),
-                                ),
-                                child: TextField(
-                                  controller: _emailController,
-                                  decoration: InputDecoration(
-                                    hintText: "Email ",
-                                    hintStyle: TextStyle(color: Colors.grey),
+                                      bottom: BorderSide(
+                                          color: Color.fromRGBO(
+                                              145, 251, 143, 1)))),
+                              child: TextField(
+                                controller: _emailController,
+                                decoration: InputDecoration(
                                     border: InputBorder.none,
-                                  ),
-                                ),
+                                    hintText: "Email",
+                                    hintStyle:
+                                        TextStyle(color: Colors.grey[700])),
                               ),
-                              Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                    bottom:
-                                        BorderSide(color: Colors.grey.shade200),
-                                  ),
-                                ),
-                                child: TextField(
-                                  controller: _passwordController,
-                                  obscureText: true,
-                                  decoration: InputDecoration(
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextField(
+                                controller: _passwordController,
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                    border: InputBorder.none,
                                     hintText: "Password",
-                                    hintStyle: TextStyle(color: Colors.grey),
-                                    border: InputBorder.none,
-                                  ),
-                                ),
+                                    hintStyle:
+                                        TextStyle(color: Colors.grey[700])),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 40),
-                        MaterialButton(
-                          onPressed: _login,
+                      )),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  FadeInUp(
+                      duration: const Duration(milliseconds: 1900),
+                      child: GestureDetector(
+                        onTap: _login,
+                        child: Container(
                           height: 50,
-                          color: Color.fromARGB(255, 18, 155, 64),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Center(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              gradient: const LinearGradient(colors: [
+                                Color.fromRGBO(33, 110, 91, 1),
+                                Color.fromRGBO(17, 103, 30, 0.6),
+                              ])),
+                          child: const Center(
                             child: Text(
                               "Login",
                               style: TextStyle(
@@ -205,53 +201,39 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 50),
-                        Text("New to Fayida?",
-                            style: TextStyle(color: Colors.grey)),
-                        SizedBox(height: 30),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: MaterialButton(
-                                onPressed: () {},
-                                height: 50,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _launchUrl(
-                                        'https://fayidaacademy.com/signup');
-                                  },
-                                  child: Center(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Color.fromARGB(255, 14, 78, 20),
-                                        borderRadius: BorderRadius.circular(50),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(16.0),
-                                        child: Text(
-                                          "Sign Up",
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 30),
-                          ],
-                        ),
-                      ],
-                    ),
+                      )),
+                  const SizedBox(
+                    height: 70,
                   ),
-                ),
+                  FadeInUp(
+                      duration: const Duration(milliseconds: 2000),
+                      child: const Text(
+                        "Forgot Password?",
+                        style: TextStyle(color: Color.fromRGBO(12, 100, 80, 1)),
+                      )),
+                  FutureBuilder<String?>(
+                    future: _getAccessToken(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (snapshot.data == null) {
+                        return const Text(
+                          "No token found",
+                          style: TextStyle(color: Colors.red),
+                        );
+                      } else {
+                        return Text(
+                          "Token: ${snapshot.data}",
+                          style: const TextStyle(color: Colors.green),
+                        );
+                      }
+                    },
+                  ),
+                ],
               ),
-            ),
+            )
           ],
         ),
       ),
