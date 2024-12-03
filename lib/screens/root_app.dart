@@ -19,7 +19,7 @@ class _RootAppState extends State<RootApp> with TickerProviderStateMixin {
   int _activeTab = 0;
   List _barItems = [
     {
-      "icon": "assets/icons/home.svg",
+      "icon": "assets/icons/new/home.svg",
       "active_icon": "assets/icons/home.svg",
       "page": HomePage(),
     },
@@ -29,17 +29,18 @@ class _RootAppState extends State<RootApp> with TickerProviderStateMixin {
     //   "page": MockExamStart(),
     // },
     {
-      "icon": "assets/icons/play.svg",
+      "icon": "assets/icons/new/play.svg",
       "active_icon": "assets/icons/play.svg",
       "page": CoursesScreen(),
     },
     {
-      "icon": "assets/icons/bell.svg",
+      "icon": "assets/icons/new/bell.svg",
       "active_icon": "assets/icons/bell.svg",
       "page": ChatPage(),
     },
     {
-      "icon": "assets/icons/profile.svg",
+      "icon": "assets/icons/new/person.svg",
+      // "icon": "assets/icons/profile.svg",
       "active_icon": "assets/icons/profile.svg",
       "page": AccountPage(),
     },

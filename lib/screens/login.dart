@@ -205,12 +205,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(
                     height: 70,
                   ),
-                  FadeInUp(
-                      duration: const Duration(milliseconds: 2000),
-                      child: const Text(
-                        "Forgot Password?",
-                        style: TextStyle(color: Color.fromRGBO(12, 100, 80, 1)),
-                      )),
+                  // FadeInUp(
+                  //     duration: const Duration(milliseconds: 2000),
+                  //     child: const Text(
+                  //       "Forgot Password?",
+                  //       style: TextStyle(color: Color.fromRGBO(12, 100, 80, 1)),
+                  //     )),
                   FutureBuilder<String?>(
                     future: _getAccessToken(),
                     builder: (context, snapshot) {
@@ -220,7 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         return Text('Error: ${snapshot.error}');
                       } else if (snapshot.data == null) {
                         return const Text(
-                          "No token found",
+                          "",
                           style: TextStyle(color: Colors.red),
                         );
                       } else {

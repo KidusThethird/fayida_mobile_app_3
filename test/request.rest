@@ -1,0 +1,30 @@
+POST https://api.fayidaacademy.com/newlogin/login
+Content-Type: application/json
+
+{
+  "email": "bob2@gmail.com",
+  "password": "masterkid"
+}
+
+### 
+
+GET https://api.fayidaacademy.com/notifications
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE0MGQ3N2Q1LTBhNmItNDBiZS1hNGM4LWE4YTc1Y2VkYmNlMiIsImlhdCI6MTczMzIzMDIxOH0.WmQhDvBSEJ7PGL5aa-YDMsD-hLB-sSaI2JRLbov7jDs
+
+
+###
+
+
+GET https://api.fayidaacademy.com/purchaselist/specificStudentCourses
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE0MGQ3N2Q1LTBhNmItNDBiZS1hNGM4LWE4YTc1Y2VkYmNlMiIsImlhdCI6MTczMzIzMDIxOH0.WmQhDvBSEJ7PGL5aa-YDMsD-hLB-sSaI2JRLbov7jDs
+
+
+###
+
+
+GET https://api.fayidaacademy.com/newlogin/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE0MGQ3N2Q1LTBhNmItNDBiZS1hNGM4LWE4YTc1Y2VkYmNlMiIsImlhdCI6MTczMzIzMDIxOH0.WmQhDvBSEJ7PGL5aa-YDMsD-hLB-sSaI2JRLbov7jDs
+
+
+###
+DELETE https://api.fayidaacademy.com/
