@@ -29,6 +29,9 @@ import 'filter_package.dart';
 import 'leader_board.dart';
 import 'dart:async';
 
+import 'localstored/courseslist.dart';
+import 'localstored/downloadscreen.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -257,6 +260,20 @@ class _HomePageState extends State<HomePage> {
             title: Text('Telegram Bot', style: TextStyle(color: Colors.black)),
             onTap: () {
               _launchUrl('https://t.me/fayidaacademy_bot');
+            },
+          ),
+
+          ListTile(
+            title:
+                Text('Go to Download', style: TextStyle(color: Colors.black)),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      DownloadedVideosScreen(), // Replace with your target screen.
+                ),
+              );
             },
           ),
         ],

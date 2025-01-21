@@ -4,6 +4,9 @@ import 'package:online_course/screens/video_details.dart';
 import 'package:online_course/screens/file_details.dart';
 import 'package:online_course/screens/link_details.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 import 'assessment_details.dart';
 
@@ -31,7 +34,6 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
 
   Future<void> fetchCourses() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    //final String? cookieString = prefs.getString('cookies');
     final String? authToken = prefs.getString('accessToken');
 
     if (authToken != null) {
@@ -49,6 +51,9 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
             studentId = courseData[0]['studentsId']; // Extract student ID
             isLoading = false;
           });
+
+          // Save data to local storage
+          await _saveDataToLocalStorage(courseData);
         } else {
           setState(() {
             message = "Error: ${response.statusMessage}";
@@ -66,6 +71,25 @@ class _CourseMaterialsScreenState extends State<CourseMaterialsScreen> {
         message = "No cookies found. Please log in.";
         isLoading = false;
       });
+    }
+  }
+
+  Future<void> _saveDataToLocalStorage(List<dynamic> data) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/specificStudentCourses.json');
+
+    // Check if the file already exists
+    if (await file.exists()) {
+      final fileContents = await file.readAsString();
+      final existingData = jsonDecode(fileContents);
+
+      // Compare the new data with existing data, and if different, update the file
+      if (jsonEncode(existingData) != jsonEncode(data)) {
+        await file.writeAsString(jsonEncode(data)); // Save new data
+      }
+    } else {
+      // If the file doesn't exist, create it
+      await file.writeAsString(jsonEncode(data));
     }
   }
 

@@ -7,7 +7,33 @@ Content-Type: application/json
 }
 
 ### 
+GET https://api.fayidaacademy.com/purchaselist/specificStudentCourses
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE0MGQ3N2Q1LTBhNmItNDBiZS1hNGM4LWE4YTc1Y2VkYmNlMiIsImlhdCI6MTczNzIwNDM2OH0.uBYtvSKiyM4eH6_AR-baPEDf4Jmw-BaACTFTkToHmMk
 
+
+### 
+GET https://api.fayidaacademy.com/studentmaterial/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE0MGQ3N2Q1LTBhNmItNDBiZS1hNGM4LWE4YTc1Y2VkYmNlMiIsImlhdCI6MTczNzIwNDM2OH0.uBYtvSKiyM4eH6_AR-baPEDf4Jmw-BaACTFTkToHmMk
+
+
+###
+POST https://api.fayidaacademy.com/studentmaterial/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE0MGQ3N2Q1LTBhNmItNDBiZS1hNGM4LWE4YTc1Y2VkYmNlMiIsImlhdCI6MTczNzIwNDM2OH0.uBYtvSKiyM4eH6_AR-baPEDf4Jmw-BaACTFTkToHmMk
+
+
+{
+  "MaterialId": "bob2@gmail.com"
+
+}
+
+### 
+GET https://api.fayidaacademy.com/purchaselist/getpuchasedlist
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE0MGQ3N2Q1LTBhNmItNDBiZS1hNGM4LWE4YTc1Y2VkYmNlMiIsImlhdCI6MTczNzIwNDM2OH0.uBYtvSKiyM4eH6_AR-baPEDf4Jmw-BaACTFTkToHmMk
+
+
+
+### 
 GET https://api.fayidaacademy.com/notifications
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImE0MGQ3N2Q1LTBhNmItNDBiZS1hNGM4LWE4YTc1Y2VkYmNlMiIsImlhdCI6MTczMzIzMDIxOH0.WmQhDvBSEJ7PGL5aa-YDMsD-hLB-sSaI2JRLbov7jDs
 

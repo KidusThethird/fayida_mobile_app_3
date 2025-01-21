@@ -4,6 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:online_course/screens/root_app.dart';
 
+import 'localstored/courseslist.dart';
+import 'localstored/downloadscreen.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -203,6 +206,39 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       )),
                   const SizedBox(
+                    height: 30,
+                  ),
+                  FadeInUp(
+                      duration: const Duration(milliseconds: 1900),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  DownloadedVideosScreen(), // Replace with your target screen.
+                            ),
+                          );
+                        },
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              gradient: const LinearGradient(colors: [
+                                Color.fromRGBO(33, 110, 91, 1),
+                                Color.fromRGBO(17, 103, 30, 0.6),
+                              ])),
+                          child: const Center(
+                            child: Text(
+                              "Go to Downloaded Files",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      )),
+                  const SizedBox(
                     height: 70,
                   ),
                   // FadeInUp(
@@ -211,26 +247,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   //       "Forgot Password?",
                   //       style: TextStyle(color: Color.fromRGBO(12, 100, 80, 1)),
                   //     )),
-                  FutureBuilder<String?>(
-                    future: _getAccessToken(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else if (snapshot.data == null) {
-                        return const Text(
-                          "",
-                          style: TextStyle(color: Colors.red),
-                        );
-                      } else {
-                        return Text(
-                          "Token: ${snapshot.data}",
-                          style: const TextStyle(color: Colors.green),
-                        );
-                      }
-                    },
-                  ),
                 ],
               ),
             )

@@ -39,6 +39,7 @@ dependencies:
   #chewie:
   #chewie: ^1.3.2
   #url_launcher:
+  path_provider: ^2.0.13
 dev_dependencies:
   flutter_test:
     sdk: flutter
